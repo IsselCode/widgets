@@ -1,0 +1,144 @@
+:root {
+  --issel-accent: #0f52ff;
+  --issel-muted: #526176;
+  --issel-soft: #f3f6ff;
+  --issel-line: #dfe7fa;
+}
+
+.dark {
+  --issel-accent: #91b1ff;
+  --issel-muted: #a1afc5;
+  --issel-soft: #131f37;
+  --issel-line: #273954;
+}
+
+body:has(.issel-home-intro) h1 {
+  max-width: 24ch;
+  font-size: clamp(2.15rem, 4vw, 3.25rem);
+  line-height: 1.12;
+  letter-spacing: -0.045em;
+  text-wrap: balance;
+}
+
+.issel-home-intro {
+  margin: 0.5rem 0 2.75rem;
+}
+
+.issel-home-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.issel-home-tags span {
+  padding: 0.3rem 0.7rem;
+  border: 1px solid var(--issel-line);
+  border-radius: 6px;
+  color: var(--issel-accent);
+  background: var(--issel-soft);
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.issel-home-lead {
+  max-width: 62ch;
+  color: var(--issel-muted);
+  line-height: 1.7;
+}
+
+.issel-home-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+.issel-home-primary,
+.issel-home-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  min-height: 44px;
+  padding: 0.75rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  line-height: 1.3;
+  text-decoration: none !important;
+  transition: background 150ms ease, border-color 150ms ease;
+}
+
+.issel-home-primary {
+  color: #fff !important;
+  background: #0f52ff;
+}
+
+.issel-home-primary:hover {
+  background: #0046d6;
+}
+
+.issel-home-secondary {
+  border-color: var(--issel-line);
+  color: inherit;
+}
+
+.issel-home-secondary:hover {
+  background: var(--issel-soft);
+}
+
+.issel-home-primary:focus-visible,
+.issel-home-secondary:focus-visible {
+  outline: 2px solid var(--issel-accent);
+  outline-offset: 3px;
+}
+
+.issel-product-card {
+  background: var(--issel-soft);
+  border-color: var(--issel-line);
+}
+
+.issel-home-next {
+  margin-top: 2.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--issel-line);
+  border-radius: 12px;
+  background: var(--issel-soft);
+}
+
+.issel-home-next h2 {
+  margin-top: 0;
+}
+
+.issel-home-next p {
+  max-width: 65ch;
+}
+
+.issel-mobile-preview {
+  display: block;
+  max-width: min(100%, 340px);
+  max-height: 580px;
+  width: auto;
+  height: auto;
+  margin-inline: auto;
+  object-fit: contain;
+}
+
+@media (max-width: 480px) {
+  .issel-home-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .issel-home-primary,
+  .issel-home-secondary {
+    width: 100%;
+  }
+
+  .issel-home-next {
+    padding: 1.1rem;
+  }
+}

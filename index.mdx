@@ -1,0 +1,104 @@
+---
+title: "Construye tu app Flutter con piezas que ya encajan"
+sidebarTitle: "Inicio"
+description: "Issel Code Widgets reúne controles, formularios, tema y navegación en un paquete Flutter. Su skill ayuda al agente a convertir tus instrucciones en pantallas completas con esas piezas."
+mode: "wide"
+---
+
+<div className="issel-home-intro">
+  <div className="issel-home-tags">
+    <span>Paquete Flutter</span>
+    <span>Skill para tu agente</span>
+  </div>
+  <p className="issel-home-lead">Dedica tu tiempo a lo que hace tu aplicación. Reutiliza una base para capturar datos, mantener la apariencia y conectar tus pantallas.</p>
+  <div className="issel-home-actions">
+    <a className="issel-home-primary" href="/quickstart">Probar el paquete <span aria-hidden="true">→</span></a>
+    <a className="issel-home-secondary" href="/guia/uso-de-la-skill">Empezar con la skill <span aria-hidden="true">→</span></a>
+  </div>
+</div>
+
+## Dos herramientas que trabajan juntas
+
+<Columns cols={2}>
+  <Card title="El paquete que importas" icon="blocks" href="/referencia/componentes" className="issel-product-card">
+    `issel_code_widgets` es una biblioteca de componentes para Flutter. Usa sus botones, campos, selectores, tablas y piezas de escritorio en tu aplicación. Comparte el tema y la navegación entre tus pantallas.
+  </Card>
+  <Card title="La skill que guía al agente" icon="terminal" href="/guia/uso-de-la-skill" className="issel-product-card">
+    `issel-code-widgets` es una guía de trabajo para tu agente de programación. Describe la pantalla que necesitas; la skill le indica cómo elegir los componentes, organizar la feature y resolver sus estados.
+  </Card>
+</Columns>
+
+Puedes programar directamente con el paquete o acompañarlo con la skill. Tu proyecto conserva sus datos, reglas de negocio y servicios.
+
+## Empieza con código o con una idea
+
+<Tabs>
+  <Tab title="Usa un componente">
+    Importa el paquete y conecta la acción a tu aplicación.
+
+    ```dart
+    import 'package:flutter/material.dart';
+    import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+    Widget saveButton(VoidCallback onSave) => IsselButton(
+      text: 'Guardar cambios',
+      onTap: onSave,
+    );
+    ```
+
+    Explora la [referencia de componentes](/referencia/componentes) para ver propiedades, ejemplos y comportamiento.
+  </Tab>
+  <Tab title="Describe tu pantalla">
+    Con la skill instalada en tu agente, comienza con una petición como esta.
+
+    ```text
+    $issel-code-widgets
+    Crea una pantalla de clientes con nombre, correo y estado.
+    Usa el repositorio de clientes de mi proyecto.
+    Valida los campos y muestra carga, error y confirmación al guardar.
+    Adapta la pantalla a escritorio y móvil.
+    ```
+
+    La skill guía la implementación con las APIs del proyecto. Consulta cómo [instalarla y utilizarla](/guia/uso-de-la-skill).
+  </Tab>
+</Tabs>
+
+## Una base que puedes llevar a más pantallas
+
+<Columns cols={3}>
+  <Card title="Formularios con una estructura común" icon="text-cursor-input" href="/guia/formularios-y-estados">
+    Combina campos y selectores con validación. Resuelve carga, errores y guardado dentro de tu flujo.
+  </Card>
+  <Card title="Una apariencia compartida" icon="palette" href="/guia/tema-y-configuracion">
+    Ajusta colores y tipografía desde la configuración. Usa los modos claro, oscuro y sistema.
+  </Card>
+  <Card title="Escritorio y móvil" icon="panel-left" href="/guia/escritorio">
+    Compón menú, caption y breadcrumbs. Adapta el contenido al espacio disponible.
+  </Card>
+</Columns>
+
+## Así se ve una interfaz con el kit
+
+Explora estas imágenes de ejemplo. Los controles se combinan en interfaces de clientes, formularios, selección y datos.
+
+<Tabs>
+  <Tab title="Escritorio">
+    <Frame>
+      <img src="/assets/images/desktop-light-v4.png" alt="Ejemplo de interfaz de clientes en escritorio con menú lateral, directorio, filtros y formulario de edición, en tema claro." />
+    </Frame>
+  </Tab>
+  <Tab title="Móvil">
+    <Frame>
+      <img className="issel-mobile-preview" src="/assets/images/mobile-dark.png" alt="Interfaz de ejemplo de Issel Code Widgets en móvil: controles de formulario en una columna con tema oscuro." />
+    </Frame>
+  </Tab>
+</Tabs>
+
+<div className="issel-home-next">
+  <h2>Prueba una pantalla. Hazla tuya.</h2>
+  <p>El ejemplo inicial reúne un formulario, el tema y el arranque de la app. Después puedes continuar con una feature de clientes o describir tu siguiente vista con la skill.</p>
+  <div className="issel-home-actions">
+    <a className="issel-home-primary" href="/ejemplos/primera-app">Abrir la primera app <span aria-hidden="true">→</span></a>
+    <a className="issel-home-secondary" href="/ejemplos/formulario-clientes">Ver el formulario de clientes <span aria-hidden="true">→</span></a>
+  </div>
+</div>

@@ -1,0 +1,189 @@
+---
+title: "Escritorio y adaptación móvil"
+description: "Compón caption, menú y breadcrumbs con adaptación móvil."
+sidebarTitle: "Escritorio"
+---
+
+## Tres responsabilidades visuales
+
+| Zona | Contenido |
+| --- | --- |
+| Barra global | Marca o breadcrumbs, menú, tema, acciones globales y controles de ventana. |
+| Menú lateral | Destinos, selección real, header/footer y cierre. |
+| Vista de contenido | Formulario, filtros, datos y acciones de su tarea. |
+
+El shell pertenece a la composición global o a presentación de la feature Issel. Las vistas de negocio componen su contenido y reutilizan el shell. En una app que ya tenga uno, integra el módulo sin reconstruir toda la raíz.
+
+## Defaults
+
+| Propiedad de `IsselDesktopConfig` | Valor inicial |
+| --- | --- |
+| `sidebarWidth` | 190. |
+| `captionHeight` | 32, mínimo 28. |
+| `sidebarBreakpoint` | 900, mayor que el ancho del sidebar. |
+| `animationDuration` | 180 ms. |
+
+El shell utiliza `Curves.easeOutCubic`. En ancho amplio, abrir menú reduce el área del contenido; cerrarlo recupera el espacio. Por debajo del breakpoint el propio scaffold superpone el menú con barrera modal. La app puede elegir utilizar `Scaffold` y Drawer en móvil, como el ejemplo siguiente. Un breakpoint describe ancho disponible, no la plataforma del dispositivo.
+
+## Shell reutilizable completo
+
+Este shell sustituye secciones en su propia área de contenido; la selección y los breadcrumbs describen la sección realmente mostrada. Recibe los widgets del producto y no introduce rutas en dominio. Para una app con router, deriva la selección de ese router y cambia el destino mediante su API.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+class DocumentationShell extends StatefulWidget {
+  const DocumentationShell({
+    super.key,
+    required this.app,
+    required this.overview,
+    required this.components,
+  });
+
+  final IsselAppController app;
+  final Widget overview;
+  final Widget components;
+
+  @override
+  State<DocumentationShell> createState() => _DocumentationShellState();
+}
+
+class _DocumentationShellState extends State<DocumentationShell> {
+  static const _items = [
+    IsselNavigationItem(
+      id: 'overview',
+      label: 'Introducción',
+      icon: Icons.home_outlined,
+    ),
+    IsselNavigationItem(
+      id: 'components',
+      label: 'Componentes',
+      icon: Icons.widgets_outlined,
+    ),
+    IsselNavigationItem(
+      id: 'appearance',
+      label: 'Apariencia',
+      icon: Icons.palette_outlined,
+    ),
+  ];
+
+  String _selectedId = 'overview';
+  bool _sidebarOpen = true;
+
+  int get _selectedIndex => _items.indexWhere((item) => item.id == _selectedId);
+  String get _title => _items[_selectedIndex].label;
+
+  @override
+  Widget build(BuildContext context) {
+    final config = widget.app.config.desktop;
+    final content = IndexedStack(
+      index: _selectedIndex,
+      children: [
+        widget.overview,
+        widget.components,
+        SingleChildScrollView(
+          padding: const EdgeInsets.all(24),
+          child: IsselThemeSelector(controller: widget.app.theme),
+        ),
+      ],
+    );
+
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < config.sidebarBreakpoint) {
+        return Scaffold(
+          appBar: AppBar(title: Text(_title)),
+          drawer: Drawer(
+            width: 260,
+            child: SafeArea(
+              child: Builder(
+                  builder: (drawerContext) => _pane(
+                        width: 260,
+                        afterSelection: () => Navigator.of(drawerContext).pop(),
+                      )),
+            ),
+          ),
+          body: content,
+        );
+      }
+
+      return IsselDesktopScaffold(
+        config: config,
+        sidebarOpen: _sidebarOpen,
+        onSidebarClose: () => setState(() => _sidebarOpen = false),
+        sidebar: _pane(width: config.sidebarWidth),
+        caption: IsselDesktopCaption(
+          height: config.captionHeight,
+          leading: _sidebarOpen
+              ? null
+              : IsselCaptionButton(
+                  icon: const Icon(Icons.menu),
+                  tooltip: 'Abrir menú',
+                  onPressed: () => setState(() => _sidebarOpen = true),
+                ),
+          title: IsselBreadcrumbs(items: [
+            IsselBreadcrumbItem(label: widget.app.config.title),
+            IsselBreadcrumbItem(label: _title),
+          ]),
+          actions: [
+            IsselCaptionButton(
+              icon: const Icon(Icons.palette_outlined),
+              tooltip: 'Configurar apariencia',
+              onPressed: () => setState(() => _selectedId = 'appearance'),
+            ),
+          ],
+        ),
+        child: content,
+      );
+    });
+  }
+
+  Widget _pane({required double width, VoidCallback? afterSelection}) =>
+      IsselNavigationPane(
+        width: width,
+        header: Text(widget.app.config.title),
+        items: _items,
+        selectedId: _selectedId,
+        onSelected: (id) {
+          setState(() => _selectedId = id);
+          afterSelection?.call();
+        },
+      );
+}
+```
+
+Muestra `DocumentationShell(app: app, overview: overviewWidget, components: galleryWidget)` en la raíz. Los argumentos `overviewWidget` y `galleryWidget` son contenido real del consumidor. El shell retiene la instancia de cada sección con `IndexedStack`; en una app grande decide si necesitas mantener esas vistas montadas o liberar sus controladores al salir.
+
+## Altura de caption y contenido completo
+
+`IsselDesktopScaffold` reserva la altura de caption una vez en el modo normal. No sumes esa medida en cada vista. `caption.height` y `config.captionHeight` deben corresponder para evitar cortes.
+
+`edgeToEdge: true` coloca el contenido en toda la ventana y superpone la barra. En ese modo el código actual omite el sidebar y su barrera. Protege los controles interactivos del contenido del área que cubre la caption. Puede servir para login/splash; la app decide qué secciones requieren sesión.
+
+## Breadcrumbs y acciones
+
+`IsselBreadcrumbItem` admite etiqueta, `onTap`, `onCopy` y tooltip de copia. La copia es un callback de la app, no una operación automática del breadcrumb. Limita el ancho y deja que las etiquetas hagan ellipsis. En escritorio, un botón Volver debe respetar la pila real, y abrir el menú debe conservar su acción independiente.
+
+`IsselCaptionButton` mide 28 × 28 por defecto, con icono de 20, radio 6, tooltip y comportamiento de teclado/foco de `IconButton`. Aumenta su tamaño en una interfaz táctil; puedes usar 44 en móvil. Los destinos deshabilitados se indican con `IsselNavigationItem.enabled: false`.
+
+## Ventanas nativas
+
+El paquete ofrece dos puntos de integración:
+
+```dart
+// Fragmento de composición; el adaptador lo proporciona la app:
+IsselDesktopCaption(
+  title: const Text('Inventario'),
+  dragAreaBuilder: (context, child) => windowAdapter.dragArea(child),
+  windowControls: windowAdapter.controls,
+)
+```
+
+`windowAdapter` es un adaptador de presentación del producto. El kit no importa `window_manager` ni `snap_layouts`, no inicializa plugins y no minimiza, maximiza o cierra ventanas por sí mismo. Si se necesitan esas acciones, consulta la API de los plugins instalados y ejecútalos sólo en plataformas compatibles.
+
+La caption deja acciones y controles fuera del área arrastrable; el título queda dentro cuando usas `dragAreaBuilder`. Si el título contiene breadcrumbs interactivos, comprueba que arrastre y pulsación no compitan. Conserva listeners del estado de maximización, inicialización fuera de `build` y liberación al cerrar. Una ejecución web verifica composición, pero no prueba estos controles nativos.
+
+## Casos que conviene comprobar
+
+Comprueba menú abierto/cerrado, móvil con Drawer y modo `edgeToEdge`, además de títulos largos, cambio de tema, destinos deshabilitados y acción de copiar. Si el producto usa router, comprueba que el pop de un detalle actualice selección y breadcrumbs; el cambio de sección local de este ejemplo no ofrece sincronización automática de rutas.

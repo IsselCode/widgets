@@ -1,0 +1,464 @@
+---
+title: "Componentes reutilizables para tus ejemplos"
+description: "Compón superficies, estados, búsqueda, tablas y acciones de guardado."
+sidebarTitle: "Componentes reutilizables"
+---
+
+Estos componentes son composiciones de la documentación, creadas con Flutter y controles Issel. Sus nombres no forman parte de los exports del paquete. Cada bloque es un archivo completo; puedes incorporarlos a una feature o a `commons/widgets` cuando varias funcionalidades los compartan.
+
+| Componente local | Uso | Qué recibe |
+| --- | --- | --- |
+| `TaskSurface` | Tarjeta principal o bloque anidado. | Contenido, padding y capa. |
+| `ResponsiveTaskPage` | Contenido breve centrado en escritorio y desplazable. | Contenido, ancho y breakpoint. |
+| `EqualHeightSections` | Dos zonas con altura igual en ancho amplio. | Dos widgets y separación. |
+| `FeedbackPanel` | Vacío/error con acción. | Título, explicación y callback. |
+| `ResourceContent` | Alternar carga, vacío, error y contenido. | Estado y widgets. |
+| `SaveAction` | Acción deshabilitada durante guardar. | Estado y callback. |
+| `CountrySearchDemo` | Búsqueda local real con selección. | Estado interno de demostración. |
+| `ResponsiveRecords` | Tabla amplia y lista móvil. | Datos y acción de abrir. |
+
+## Superficie principal o anidada
+
+Ubica `TaskSurface(nested: false)` directamente sobre el Scaffold. Dentro de esa superficie, `nested: true` crea la capa `surfaceContainer`. Un campo dentro del bloque anidado vuelve a `surface`.
+
+
+```dart
+import 'package:flutter/material.dart';
+
+class TaskSurface extends StatelessWidget {
+  const TaskSurface({
+    super.key,
+    required this.child,
+    this.nested = false,
+    this.padding = const EdgeInsets.all(20),
+  });
+
+  final Widget child;
+  final bool nested;
+  final EdgeInsetsGeometry padding;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Container(
+      padding: padding,
+      decoration: BoxDecoration(
+        color: nested ? colors.surfaceContainer : colors.surface,
+        borderRadius: BorderRadius.circular(nested ? 10 : 16),
+      ),
+      child: child,
+    );
+  }
+}
+```
+
+Es una pieza de layout y puede usar Flutter estándar. La integración con el paquete la realiza la pantalla que contiene controles Issel. No agregues un control sólo para cambiar la apariencia de esta superficie.
+
+## Página que utiliza el espacio disponible
+
+El `LayoutBuilder` necesita el viewport acotado de un `Scaffold.body` o equivalente. Se resta exactamente la suma del padding vertical antes de calcular la altura mínima. El contenido grande puede seguir creciendo y desplazándose.
+
+
+```dart
+import 'dart:math' as math;
+
+import 'package:flutter/material.dart';
+
+class ResponsiveTaskPage extends StatelessWidget {
+  const ResponsiveTaskPage({
+    super.key,
+    required this.child,
+    this.maxWidth = 1180,
+    this.wideBreakpoint = 880,
+    this.padding = 24,
+  });
+
+  final Widget child;
+  final double maxWidth;
+  final double wideBreakpoint;
+  final double padding;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          final wide = constraints.maxWidth >= wideBreakpoint;
+          final minHeight = wide && constraints.hasBoundedHeight
+              ? math.max(0.0, constraints.maxHeight - padding * 2)
+              : 0.0;
+          return SingleChildScrollView(
+            padding: EdgeInsets.all(padding),
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: minHeight),
+              child: Align(
+                alignment: wide ? Alignment.center : Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(maxWidth: maxWidth),
+                  child: child,
+                ),
+              ),
+            ),
+          );
+        },
+      );
+}
+```
+
+No coloques `Expanded` vertical como hijo directo de su contenido desplazable. Una tabla necesita su propio `SizedBox(height: ...)`. El breakpoint y máximo son defaults de esta composición local, no de todos los widgets Issel.
+
+## Dos secciones alineadas
+
+
+```dart
+import 'package:flutter/material.dart';
+
+class EqualHeightSections extends StatelessWidget {
+  const EqualHeightSections({
+    super.key,
+    required this.first,
+    required this.second,
+    this.breakpoint = 880,
+    this.spacing = 20,
+  });
+
+  final Widget first;
+  final Widget second;
+  final double breakpoint;
+  final double spacing;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+        builder: (context, constraints) {
+          if (constraints.maxWidth < breakpoint) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [first, SizedBox(height: spacing), second],
+            );
+          }
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: first),
+                SizedBox(width: spacing),
+                Expanded(child: second),
+              ],
+            ),
+          );
+        },
+      );
+}
+```
+
+Utiliza altura intrínseca para pequeños grupos estáticos. No la impongas a grandes listas o viewports que no pueden calcular dimensiones intrínsecas. Si ambas zonas tienen filas equivalentes de controles, iguala también sus alturas internas cuando sea necesario.
+
+## Panel de vacío o error
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+import 'task_surface.dart';
+
+class FeedbackPanel extends StatelessWidget {
+  const FeedbackPanel({
+    super.key,
+    required this.title,
+    required this.message,
+    this.actionText,
+    this.onAction,
+    this.nested = false,
+  }) : assert((actionText == null) == (onAction == null));
+
+  final String title;
+  final String message;
+  final String? actionText;
+  final VoidCallback? onAction;
+  final bool nested;
+
+  @override
+  Widget build(BuildContext context) => TaskSurface(
+        nested: nested,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(title, style: Theme.of(context).textTheme.titleMedium),
+            const SizedBox(height: 8),
+            Text(message, style: Theme.of(context).textTheme.bodyMedium),
+            if (onAction != null) ...[
+              const SizedBox(height: 16),
+              IsselButton(text: actionText!, onTap: onAction),
+            ],
+          ],
+        ),
+      );
+}
+```
+
+El encabezado se explica con texto; un icono decorativo no es necesario. La acción existe sólo cuando tiene un callback real. Usa `nested: true` si el panel está dentro de otra superficie principal.
+
+## Estado de recurso
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+import 'feedback_panel.dart';
+
+enum ResourcePhase { loading, empty, failure, content }
+
+class ResourceContent extends StatelessWidget {
+  const ResourceContent({
+    super.key,
+    required this.phase,
+    required this.child,
+    this.failureMessage = 'No se pudo cargar la información.',
+    this.onRetry,
+    this.onCreate,
+    this.nested = false,
+  });
+
+  final ResourcePhase phase;
+  final Widget child;
+  final String failureMessage;
+  final VoidCallback? onRetry;
+  final VoidCallback? onCreate;
+  final bool nested;
+
+  @override
+  Widget build(BuildContext context) => switch (phase) {
+        ResourcePhase.loading => Semantics(
+            label: 'Cargando información',
+            liveRegion: true,
+            child: Padding(
+              padding: const EdgeInsets.all(24),
+              child: Center(child: IsselCircularProgressIndicator()),
+            ),
+          ),
+        ResourcePhase.empty => FeedbackPanel(
+            title: 'Sin registros',
+            message: 'Crea el primer registro para empezar.',
+            actionText: onCreate == null ? null : 'Crear registro',
+            onAction: onCreate,
+            nested: nested,
+          ),
+        ResourcePhase.failure => FeedbackPanel(
+            title: 'No se pudo cargar',
+            message: failureMessage,
+            actionText: onRetry == null ? null : 'Reintentar',
+            onAction: onRetry,
+            nested: nested,
+          ),
+        ResourcePhase.content => child,
+      };
+}
+```
+
+La feature calcula `phase` a partir de su controlador. Este componente no realiza consultas ni transforma fallos técnicos. Su carga incorpora semántica textual; personaliza también los estados vacío/error según la tarea.
+
+## Acción de guardar
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+class SaveAction extends StatelessWidget {
+  const SaveAction({
+    super.key,
+    required this.isSaving,
+    required this.onSave,
+    this.text = 'Guardar',
+    this.height = 60,
+  });
+
+  final bool isSaving;
+  final VoidCallback? onSave;
+  final String text;
+  final double height;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+        liveRegion: true,
+        child: IsselButton(
+          text: isSaving ? 'Guardando…' : text,
+          height: height,
+          onTap: isSaving ? null : onSave,
+        ),
+      );
+}
+```
+
+El bloqueo visual se acompaña de protección en el controlador, como en el formulario de clientes. Este componente recibe el estado; no genera un segundo estado de guardado.
+
+## Búsqueda local real
+
+La búsqueda vuelve a filtrar la colección completa en cada edición. Se omite `maxItemsToShow` para que todas las coincidencias se construyan y puedan desplazarse. Al seleccionar se restaura la colección; el botón secundario permite reiniciar también una búsqueda cerrada sin selección.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+class CountrySearchDemo extends StatefulWidget {
+  const CountrySearchDemo({super.key});
+
+  @override
+  State<CountrySearchDemo> createState() => _CountrySearchDemoState();
+}
+
+class _CountrySearchDemoState extends State<CountrySearchDemo> {
+  static const _countries = <String, String>{
+    'mx': 'México',
+    'co': 'Colombia',
+    'pe': 'Perú',
+    'cl': 'Chile',
+    'ar': 'Argentina',
+    'uy': 'Uruguay',
+  };
+
+  String _query = '';
+  String? _value;
+  int _revision = 0;
+
+  @override
+  Widget build(BuildContext context) {
+    final matches = _countries.entries.where(
+      (entry) =>
+          entry.value.toLowerCase().contains(_query.trim().toLowerCase()),
+    );
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        IsselSearchDropdown<String>(
+          key: ValueKey(_revision),
+          value: _value,
+          hintText: 'País',
+          overlay: true,
+          items: [
+            for (final entry in matches)
+              DropdownMenuItem(value: entry.key, child: Text(entry.value)),
+          ],
+          onSearchChanged: (value) => setState(() => _query = value),
+          onChanged: (value) => setState(() {
+            _value = value;
+            _query = '';
+          }),
+        ),
+        if (matches.isEmpty) ...[
+          const SizedBox(height: 8),
+          const Text('Sin coincidencias. Prueba otra búsqueda.'),
+        ],
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton(
+            onPressed: () => setState(() {
+              _query = '';
+              _revision++;
+            }),
+            child: const Text('Restablecer búsqueda'),
+          ),
+        ),
+      ],
+    );
+  }
+}
+```
+
+El filtrado básico no elimina acentos: `mé` coincide con México y `me` puede no hacerlo. Implementa normalización si es requisito del producto. El campo interno de búsqueda se destruye al cerrar el desplegable; no presupongas que el paquete persista o reinicie el estado de tu consulta externa.
+
+## Tabla amplia y lista móvil
+
+Esta composición recibe datos de demostración y un callback; no hace consultas. La tabla usa una altura fija configurable y columnas con celdas cortas. En móvil cambia a filas legibles.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+class DocumentationRecord {
+  const DocumentationRecord({
+    required this.id,
+    required this.name,
+    required this.active,
+  });
+
+  final int id;
+  final String name;
+  final bool active;
+}
+
+class ResponsiveRecords extends StatelessWidget {
+  const ResponsiveRecords({
+    super.key,
+    required this.records,
+    required this.onOpen,
+    this.tableHeight = 320,
+    this.breakpoint = 650,
+  });
+
+  final List<DocumentationRecord> records;
+  final ValueChanged<DocumentationRecord> onOpen;
+  final double tableHeight;
+  final double breakpoint;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    if (records.isEmpty) return const Text('Sin registros para mostrar.');
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < breakpoint) {
+        return Column(
+          children: [
+            for (final record in records)
+              Padding(
+                padding: const EdgeInsets.only(bottom: 8),
+                child: ListTile(
+                  title: Text(record.name),
+                  subtitle: Text('Registro ${record.id}'),
+                  trailing: SizedBox(
+                    width: 90,
+                    child: IsselPill(
+                      text: record.active ? 'Activo' : 'Inactivo',
+                      height: 36,
+                      color: colors.surfaceContainer,
+                    ),
+                  ),
+                  onTap: () => onOpen(record),
+                ),
+              ),
+          ],
+        );
+      }
+      return SizedBox(
+        height: tableHeight,
+        child: IsselTableWidget(
+          header: const IsselHeaderTable(titleHeaders: ['Nombre', 'Estado']),
+          rows: [
+            for (final record in records)
+              IsselRowTable(cells: [
+                IsselPill(
+                  color: colors.surfaceContainer,
+                  widget: Text(record.name,
+                      maxLines: 1, overflow: TextOverflow.ellipsis),
+                ),
+                IsselPill(
+                  color: colors.surfaceContainer,
+                  text: record.active ? 'Activo' : 'Inactivo',
+                ),
+              ]),
+          ],
+          onTapRow: (index) => onOpen(records[index]),
+        ),
+      );
+    });
+  }
+}
+```
+
+Los defaults de color de este ejemplo corresponden a una tabla o lista sobre el fondo del Scaffold. Si la anidas en una superficie existente, adapta tabla y celdas a la alternancia. `IsselTableWidget` construye todas las filas; para grandes volúmenes evalúa paginación o una lista virtualizada del producto.
+
+## Reutilizar los ejemplos
+
+Estos bloques pueden convertirse después en tus componentes de ejemplo. Conserva sus imports, datos y callbacks, adapta los nombres a tu aplicación y comprueba cada composición en claro/oscuro y anchos reducido/amplio. Sus APIs pertenecen a estos ejemplos; las APIs exportadas por el paquete están en la referencia.

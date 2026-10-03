@@ -1,0 +1,62 @@
+# IsselButton
+
+Acción principal basada en FilledButton, con texto, foco y tamaño configurable.
+
+**Categoría:** Acciones. **Uso:** Confirmar, guardar, continuar o ejecutar la acción principal de una sección.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_button.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselButton(
+      {super.key,
+      required this.text,
+      this.onTap,
+      this.color,
+      this.textColor,
+      this.focusNode,
+      this.width = double.infinity,
+      this.height = 60})
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `text` | `String` | Sí | `—` | Texto mostrado dentro del botón. |
+| `onTap` | `VoidCallback?` | No | `null` | Callback invocado al presionar el botón.  Si es null, el botón queda deshabilitado. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional. |
+| `textColor` | `Color?` | No | `null` | Color opcional del texto. |
+| `focusNode` | `FocusNode?` | No | `null` | Nodo de foco opcional usado por el botón. |
+| `width` | `double` | No | `double.infinity` | Ancho mínimo y máximo del botón. |
+| `height` | `double` | No | `60` | Altura fija del botón. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_button_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget buttonExample(bool saving, VoidCallback onSave) => IsselButton(
+      text: saving ? 'Guardando…' : 'Guardar',
+      onTap: saving ? null : onSave,
+    );
+```
+
+## Comportamiento y límites
+
+- onTap: null deshabilita el botón. El estado de guardado pertenece a la app.
+- width: double.infinity necesita un ancho disponible finito. En Row usa Expanded o un width concreto.
+- El texto usa bodyMedium en negrita y onPrimary; color omite el override del fondo y utiliza el estilo Material del tema.
+- El radio está fijado en 10 y no sigue automáticamente IsselThemeConfig.borderRadius.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

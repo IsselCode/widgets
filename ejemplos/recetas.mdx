@@ -1,0 +1,367 @@
+---
+title: "Recetas de integración"
+description: "Integra imágenes, assets, fuentes, búsqueda remota y diálogos."
+sidebarTitle: "Recetas de integración"
+---
+
+Estas recetas amplían la primera app y la feature de clientes. Los recursos y contratos se indican expresamente; adapta su ubicación a las convenciones del consumidor.
+
+## Texto multilínea y contraseña
+
+```dart
+// Dentro de build; ambos controllers pertenecen al State y se liberan allí:
+IsselTextFormField(
+  controller: notesController,
+  hintText: 'Notas',
+  minLines: 3,
+  maxLines: 5,
+  height: 140,
+  textInputAction: TextInputAction.newline,
+);
+
+IsselTextFormField(
+  controller: passwordController,
+  hintText: 'Contraseña',
+  prefixIcon: Icons.lock_outline,
+  obscureText: true,
+  maxLines: 1,
+);
+```
+
+La contraseña ya incluye el control de visibilidad. No añadas un segundo control para la misma decisión. Para un login real, conecta el contrato de autenticación del producto y no realices la petición desde `build`.
+
+## Imágenes: elegir, validar y limpiar
+
+Este componente usa el selector nativo del paquete cuando no recibe `pickImage`. El callback opcional permite probarlo con una función inyectada o reemplazar el selector. `validator` comprueba presencia y tamaño; no recorta ni comprime.
+
+
+```dart
+import 'dart:typed_data';
+
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+class ImageSelectionDemo extends StatefulWidget {
+  const ImageSelectionDemo({super.key, this.pickImage});
+
+  final Future<Uint8List?> Function()? pickImage;
+
+  @override
+  State<ImageSelectionDemo> createState() => _ImageSelectionDemoState();
+}
+
+class _ImageSelectionDemoState extends State<ImageSelectionDemo> {
+  final _formKey = GlobalKey<FormState>();
+  Uint8List? _bytes;
+
+  @override
+  Widget build(BuildContext context) => Form(
+        key: _formKey,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            IsselImagePicker(
+              bytes: _bytes,
+              pickImage: widget.pickImage,
+              fit: BoxFit.contain,
+              showClearButton: true,
+              onChanged: (bytes) => setState(() => _bytes = bytes),
+              onError: (_) => ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                    content: Text('No se pudo seleccionar la imagen.')),
+              ),
+              validator: (bytes) {
+                if (bytes == null) return 'Selecciona una imagen';
+                if (bytes.lengthInBytes > 2 * 1024 * 1024) {
+                  return 'La imagen debe ocupar como máximo 2 MB';
+                }
+                return null;
+              },
+            ),
+            const SizedBox(height: 16),
+            IsselButton(
+              text: 'Validar imagen',
+              onTap: () {
+                if (!(_formKey.currentState?.validate() ?? false)) return;
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                      content: Text('La imagen cumple la validación.')),
+                );
+              },
+            ),
+          ],
+        ),
+      );
+}
+```
+
+Para mostrar una imagen existente puedes pasar `imageProvider`, por ejemplo un `NetworkImage` construido con una URL real del producto. El provider no genera bytes para el validator. Define cómo se acepta una imagen existente y cómo se comunica su eliminación al repositorio.
+
+Una subida real pertenece al repositorio: recibe bytes o el objeto requerido por el contrato, transforma la respuesta y devuelve un resultado. `IsselImagePicker` sólo selecciona, muestra y comunica; no sube el archivo al servidor. El límite del validator se comprueba después de leer la imagen en memoria.
+
+## Assets locales
+
+Coloca tus imágenes en la app y registra la carpeta:
+
+```yaml
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/icons/
+```
+
+```dart
+// Requiere assets/icons/products.png en la aplicación:
+IsselActionBox(
+  asset: 'assets/icons/products.png',
+  title: 'Productos',
+  height: 140,
+  width: 140,
+  onTap: openProducts,
+);
+```
+
+`openProducts` es una acción real de presentación. `IsselAssetContainer(network: 'dominio', asset: 'respaldo')` carga un favicon y necesita también un fallback válido. La [guía oficial de assets Flutter](https://docs.flutter.dev/ui/assets/assets-and-images) explica registro y variantes de resolución.
+
+## Fuente del producto
+
+Agrega los archivos de fuente que tengas disponibles a la app:
+
+```yaml
+flutter:
+  fonts:
+    - family: AppFont
+      fonts:
+        - asset: assets/fonts/AppFont-Regular.ttf
+        - asset: assets/fonts/AppFont-Bold.ttf
+          weight: 700
+```
+
+```dart
+// En la configuración centralizada:
+app.configure(
+  lightTheme: app.config.lightTheme.copyWith(
+    text: app.config.lightTheme.text.copyWith(fontFamily: 'AppFont'),
+  ),
+  darkTheme: app.config.darkTheme.copyWith(
+    text: app.config.darkTheme.text.copyWith(fontFamily: 'AppFont'),
+  ),
+);
+```
+
+Las rutas y `AppFont` son nombres del ejemplo: deben corresponder a archivos reales. La fuente no viene incluida en el paquete. La escala y las alturas existentes se conservan con `copyWith`.
+
+## JSON y entidad separados
+
+Para ilustrar el mapper, esta receta define un contrato de respuesta concreto:
+
+```json
+{"id":7,"name":"Ana","email":"ana@ejemplo.com","type":"person","active":true}
+```
+
+Los campos son del ejemplo y no describen un endpoint incluido en el paquete. El archivo necesita la entidad del formulario de clientes. Un datasource puede usarlo tras recibir el JSON del cliente API real.
+
+
+```dart
+import 'package:issel_code_widgets/issel_core.dart';
+
+import '../../domain/entities/customer.dart';
+
+class CustomerDto {
+  const CustomerDto({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.type,
+    required this.active,
+  });
+
+  final int id;
+  final String name;
+  final String email;
+  final CustomerType type;
+  final bool active;
+
+  factory CustomerDto.fromJson(Map<String, Object?> json) {
+    if (json
+        case {
+          'id': final int id,
+          'name': final String name,
+          'email': final String email,
+          'type': final String type,
+          'active': final bool active,
+        }) {
+      final parsedType = switch (type) {
+        'person' => CustomerType.person,
+        'company' => CustomerType.company,
+        _ => null,
+      };
+      if (parsedType != null) {
+        return CustomerDto(
+          id: id,
+          name: name,
+          email: email,
+          type: parsedType,
+          active: active,
+        );
+      }
+    }
+    throw const AppException(
+      message: 'La respuesta del cliente tiene un formato inválido.',
+      code: 'invalid_response',
+    );
+  }
+
+  CustomerEntity toEntity() => CustomerEntity(
+        id: id,
+        name: name,
+        email: email,
+        type: type,
+        active: active,
+      );
+
+  static Map<String, Object?> createPayload(CustomerDraft draft) => {
+        'name': draft.name,
+        'email': draft.email,
+        'type': draft.type.name,
+        'active': draft.active,
+      };
+}
+```
+
+La petición no envía el id que asigna el servidor. Si el contrato del backend usa envoltorios, otros nombres o nulabilidad, cambia el datasource/mapper. El repositorio captura `AppException`, convierte con `AppFailure.fromException` y retorna `AppResult<CustomerEntity>`; la vista recibe una entidad, no JSON.
+
+## Búsqueda remota: debounce y respuestas antiguas
+
+Este controlador recibe una capacidad de búsqueda inyectada. La función se implementa con el repositorio del producto; aquí no se presupone cliente HTTP ni endpoint. `queueSearch` programa una consulta y `searchNow` devuelve su resultado.
+
+
+```dart
+import 'dart:async';
+
+import 'package:issel_code_widgets/issel_app.dart';
+import 'package:issel_code_widgets/issel_core.dart';
+
+class NameSearchController extends IsselController {
+  NameSearchController({required this.search});
+
+  final Future<AppResult<List<String>>> Function(String query) search;
+  Timer? _timer;
+  int _revision = 0;
+  bool isLoading = false;
+  List<String> items = const [];
+  AppFailure? failure;
+
+  void queueSearch(String query) {
+    if (isDisposed) return;
+    _timer?.cancel();
+    final revision = ++_revision;
+    isLoading = true;
+    failure = null;
+    notifyIfActive();
+    _timer = Timer(const Duration(milliseconds: 300), () {
+      _execute(query, revision);
+    });
+  }
+
+  Future<AppResult<List<String>>> searchNow(String query) {
+    if (isDisposed) throw StateError('Controlador liberado.');
+    _timer?.cancel();
+    final revision = ++_revision;
+    isLoading = true;
+    failure = null;
+    notifyIfActive();
+    return _execute(query, revision);
+  }
+
+  Future<AppResult<List<String>>> _execute(String query, int revision) async {
+    try {
+      final result = await search(query);
+      if (!isDisposed && revision == _revision) {
+        switch (result) {
+          case AppSuccess<List<String>>(:final value):
+            items = value;
+            failure = null;
+          case AppError<List<String>>(:final failure):
+            this.failure = failure;
+        }
+      }
+      return result;
+    } finally {
+      if (!isDisposed && revision == _revision) {
+        isLoading = false;
+        notifyIfActive();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _revision++;
+    super.dispose();
+  }
+}
+```
+
+Conecta `IsselSearchDropdown.onSearchChanged` a `controller.queueSearch` y reconstruye desde `AnimatedBuilder`. Construye sus `DropdownMenuItem` con `controller.items`; presenta carga y error fuera del selector. La revisión se invalida al escribir, incluso mientras espera el debounce, para que una respuesta previa no reemplace la consulta nueva.
+
+Descartar una respuesta no cancela la petición del repositorio. Si el cliente dispone de cancelación, integra ese mecanismo en datos y en el ciclo de vida del controlador.
+
+## Dropdown validado: cambio desde fuera
+
+```dart
+// Campos estables de un State:
+final typeFieldKey = GlobalKey<FormFieldState<String>>();
+String? selectedType;
+
+// Dentro de Form:
+IsselDropdown2<String>(
+  key: typeFieldKey,
+  value: selectedType,
+  hintText: 'Tipo',
+  items: const [DropdownMenuItem(value: 'company', child: Text('Empresa'))],
+  onChanged: (value) => setState(() => selectedType = value),
+  validator: (value) => value == null ? 'Selecciona un tipo' : null,
+);
+
+// En un callback de la vista, fuera de build:
+setState(() => selectedType = 'company');
+typeFieldKey.currentState?.didChange('company');
+```
+
+El snippet muestra tres lugares del mismo State; no es un archivo independiente. `didChange` actualiza el `FormField`; cambiar sólo `selectedType` no garantiza la sincronización en esta implementación. Si bloqueas el campo con `AbsorbPointer`, revisa también navegación por teclado y foco para tu entorno.
+
+## Tabla con ancho mínimo
+
+```dart
+// En un viewport con ancho y altura disponibles:
+SizedBox(
+  height: 320,
+  child: LayoutBuilder(builder: (context, constraints) {
+    final width = constraints.maxWidth < 720 ? 720.0 : constraints.maxWidth;
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      child: SizedBox(width: width, child: tableWidget),
+    );
+  }),
+);
+```
+
+`tableWidget` es un `IsselTableWidget` con header y filas válidos. La altura del `SizedBox` acota el `Expanded` interno y el scroll horizontal pertenece a la app. Para móvil también puedes utilizar `ResponsiveRecords`, que cambia de tabla a lista.
+
+## Resultados en un diálogo
+
+```dart
+// Callback de la vista caller; editDialog lo aporta la feature:
+final customer = await showDialog<CustomerEntity>(
+  context: context,
+  builder: (_) => editDialog,
+);
+if (!mounted || customer == null) return;
+
+// El diálogo cierra después de un guardado exitoso:
+// Navigator.of(context).pop<CustomerEntity>(savedCustomer);
+```
+
+Los destinos y efectos pertenecen a presentación. No introduzcas navegación en el repositorio para reutilizar un formulario en página y diálogo.

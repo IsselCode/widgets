@@ -1,0 +1,65 @@
+---
+title: "IsselAssetContainer"
+description: "Contenedor de asset local o favicon de un dominio, con sombra."
+sidebarTitle: "IsselAssetContainer"
+---
+
+Contenedor de asset local o favicon de un dominio, con sombra.
+
+**Categoría:** Imágenes. **Uso:** Identidad visual de un servicio o imagen local pequeña.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_asset_container.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+IsselAssetContainer({
+    super.key,
+    this.asset,
+    this.network,
+    this.height = 80,
+    this.width = 80,
+    this.color,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `asset` | `String?` | No | `null` | Ruta del asset local mostrado directamente o usado como respaldo. |
+| `network` | `String?` | No | `null` | Dominio utilizado para cargar el favicon desde red. |
+| `height` | `double` | No | `80` | Altura total del contenedor. |
+| `width` | `double` | No | `80` | Ancho total del contenedor. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional del contenedor.  Si es null, usa [ColorScheme.surface]. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget assetContainerExample(String fallbackAsset) => IsselAssetContainer(
+      asset: fallbackAsset,
+      network: 'flutter.dev',
+      height: 80,
+      width: 80,
+    );
+```
+
+## Comportamiento y límites
+
+- El constructor exige asset o network. network espera un dominio y construye una URL al servicio Google S2; no es una URL genérica de imagen.
+- Cuando network existe, tiene prioridad sobre asset. En fallo de red se ejecuta Image.asset(asset!): proporciona también un asset de respaldo.
+- Aunque el assert permite sólo network, ese caso puede fallar al cargar la red porque asset es null.
+- Registra el asset. Para imágenes remotas generales compón Image.network con manejo de error en la app.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](/ejemplos/componentes-reutilizables) y [formularios](/guia/formularios-y-estados).

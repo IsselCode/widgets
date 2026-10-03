@@ -1,0 +1,71 @@
+# IsselPill
+
+Superficie breve para texto o un widget, con acción opcional.
+
+**Categoría:** Información. **Uso:** Estados, etiquetas, celdas de tabla y contenido pequeño.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_pill.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+IsselPill({
+    super.key,
+    this.text,
+    this.widget,
+    this.onTap,
+    this.height = 50,
+    this.textColor,
+    this.color,
+    this.alignment = Alignment.center,
+    this.padding = const EdgeInsets.symmetric(horizontal: 20),
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `text` | `String?` | No | `null` | Texto mostrado cuando no se proporciona [widget]. |
+| `widget` | `Widget?` | No | `null` | Widget personalizado mostrado cuando no se proporciona [text]. |
+| `onTap` | `VoidCallback?` | No | `null` | Callback invocado al presionar la píldora. |
+| `height` | `double?` | No | `50` | Altura opcional de la píldora. |
+| `textColor` | `Color?` | No | `null` | Color opcional del texto cuando se usa [text]. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional. |
+| `alignment` | `AlignmentGeometry?` | No | `Alignment.center` | Alineación del contenido dentro de la píldora. |
+| `padding` | `EdgeInsetsGeometry` | No | `const EdgeInsets.symmetric(horizontal: 20)` | Padding interno de la píldora. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_pill_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget pillExample(BuildContext context, bool active) {
+  final colors = Theme.of(context).colorScheme;
+  return IsselPill(
+    text: active ? 'Activo' : 'Inactivo',
+    height: 36,
+    color: colors.surfaceContainer,
+  );
+}
+```
+
+## Comportamiento y límites
+
+- Proporciona exactamente uno de text o widget. El constructor comprueba esta condición con assert.
+- No es un chip de selección con estado propio. El callback y la selección pertenecen al padre.
+- alignment es nullable en la firma, pero build usa alignment!: conserva un valor no nulo.
+- El fondo predeterminado es surface y el texto onSurface. height: null permite altura natural, sujeta al layout padre.
+- Usa Text con maxLines/ellipsis dentro de widget para valores largos. Una explicación extensa necesita un bloque de texto.
+- Su Align ocupa el ancho disponible. En `ListTile.trailing`, limita el ancho con `SizedBox(width: 90, child: IsselPill(...))` para reservar espacio al título; ajusta esa medida al texto y la escala de tu app.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

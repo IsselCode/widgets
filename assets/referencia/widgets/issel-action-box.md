@@ -1,0 +1,68 @@
+# IsselActionBox
+
+Tarjeta pulsable con imagen local, título y acción opcional de eliminar.
+
+**Categoría:** Acciones. **Uso:** Accesos visuales a módulos u opciones que realmente necesitan imagen.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_action_box.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselActionBox({
+    super.key,
+    required this.asset,
+    required this.title,
+    required this.height,
+    required this.width,
+    required this.onTap,
+    this.borderRadius = 10,
+    this.onDeleteTap,
+    this.color,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `asset` | `String` | Sí | `—` | Ruta del asset utilizado por [Image.asset]. |
+| `title` | `String` | Sí | `—` | Texto mostrado debajo de la imagen. |
+| `height` | `double` | Sí | `—` | Altura total de la caja de acción.  También define el padding interno, el tamaño de la imagen y el tamaño de fuente del título. |
+| `width` | `double` | Sí | `—` | Ancho total de la caja de acción. |
+| `onTap` | `VoidCallback` | Sí | `—` | Callback invocado cuando se presiona la caja de acción. |
+| `borderRadius` | `double` | No | `10` | Radio aplicado a la caja y al borde del efecto táctil. |
+| `onDeleteTap` | `VoidCallback?` | No | `null` | Callback opcional invocado cuando se presiona el icono de eliminar.  Si es null, el icono de eliminar no se renderiza. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional de la caja.  Si es null, usa [ColorScheme.surface]. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_action_box_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget actionBoxExample(String asset, VoidCallback onOpen) => IsselActionBox(
+      asset: asset,
+      title: 'Productos',
+      height: 140,
+      width: 140,
+      onTap: onOpen,
+    );
+```
+
+## Comportamiento y límites
+
+- asset debe existir y estar declarado en pubspec.yaml de la app.
+- height determina padding, imagen (45% del alto), zona del título (20%) y tamaño de fuente (9%). Ajusta títulos a ese espacio.
+- onDeleteTap muestra un IconButton colocado parcialmente fuera de la caja. Revisa que el padre no recorte esa zona.
+- La caja requiere Material en su árbol para Ink/InkWell. Un Scaffold proporciona ese contexto.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

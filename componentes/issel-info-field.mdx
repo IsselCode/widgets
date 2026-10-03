@@ -1,0 +1,68 @@
+---
+title: "IsselInfoField"
+description: "Etiqueta y valor destacado en dos bloques de ancho equivalente."
+sidebarTitle: "IsselInfoField"
+---
+
+Etiqueta y valor destacado en dos bloques de ancho equivalente.
+
+**Categoría:** Información. **Uso:** Un dato breve de lectura que aporta contexto.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_info_field.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselInfoField({
+    super.key,
+    required this.title,
+    required this.value,
+    this.height = 50,
+    this.backColor,
+    this.valueBackColor,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `title` | `String` | Sí | `—` | Texto descriptivo mostrado en el bloque izquierdo. |
+| `value` | `String` | Sí | `—` | Valor mostrado en el bloque derecho. |
+| `height` | `double` | No | `50` | Altura total del campo. |
+| `backColor` | `Color?` | No | `null` | Color de fondo opcional del campo. |
+| `valueBackColor` | `Color?` | No | `null` | Color de fondo opcional del bloque del valor. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget infoFieldExample(BuildContext context, int pending) {
+  final colors = Theme.of(context).colorScheme;
+  return IsselInfoField(
+    title: 'Pendientes',
+    value: '$pending',
+    backColor: colors.surfaceContainer,
+    valueBackColor: colors.surface,
+  );
+}
+```
+
+## Comportamiento y límites
+
+- backColor es el campo externo y valueBackColor el bloque del valor. El valor utiliza primary en negrita.
+- Dentro de una tarjeta surface, configura backColor: surfaceContainer y valueBackColor: surface.
+- La altura es fija y no incorpora ellipsis en los Text: comprueba títulos/valores largos y escala de texto.
+- No repitas con este campo un valor que ya muestra un control editable si no aporta información distinta.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](/ejemplos/componentes-reutilizables) y [formularios](/guia/formularios-y-estados).

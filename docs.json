@@ -1,0 +1,189 @@
+{
+  "$schema": "https://mintlify.com/docs.json",
+  "theme": "mint",
+  "name": "Issel Code Widgets",
+  "description": "Documentación en español del paquete Flutter y la skill de Issel Code. Guías, componentes y ejemplos para construir tu aplicación.",
+  "colors": {
+    "primary": "#0F52FF",
+    "light": "#6693FF",
+    "dark": "#0046D6"
+  },
+  "appearance": {
+    "default": "system"
+  },
+  "icons": {
+    "library": "lucide"
+  },
+  "fonts": {
+    "family": "Inter"
+  },
+  "styling": {
+    "eyebrows": "breadcrumbs",
+    "codeblocks": "system"
+  },
+  "favicon": "/favicon.svg",
+  "logo": {
+    "light": "/logo/light.svg",
+    "dark": "/logo/dark.svg",
+    "href": "/"
+  },
+  "search": {
+    "prompt": "Buscar en la documentación…"
+  },
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Guías",
+        "groups": [
+          {
+            "group": "Primeros pasos",
+            "pages": [
+              "index",
+              "quickstart",
+              "guia/introduccion",
+              "guia/instalacion"
+            ]
+          },
+          {
+            "group": "Construir tu aplicación",
+            "pages": [
+              "guia/arquitectura",
+              "guia/tema-y-configuracion",
+              "guia/formularios-y-estados",
+              "guia/navegacion",
+              "guia/escritorio"
+            ]
+          },
+          {
+            "group": "Trabajar con la skill",
+            "pages": [
+              "guia/uso-de-la-skill"
+            ]
+          },
+          {
+            "group": "Ayuda",
+            "pages": [
+              "guia/preguntas-frecuentes"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Componentes",
+        "groups": [
+          {
+            "group": "Referencia",
+            "pages": [
+              "referencia/componentes",
+              "referencia/api-transversal"
+            ]
+          },
+          {
+            "group": "Acciones e información",
+            "pages": [
+              "componentes/issel-button",
+              "componentes/issel-action-box",
+              "componentes/issel-header-action-tile",
+              "componentes/issel-pill",
+              "componentes/issel-info-field",
+              "componentes/issel-info-field2"
+            ]
+          },
+          {
+            "group": "Formularios e imágenes",
+            "pages": [
+              "componentes/issel-text-form-field",
+              "componentes/issel-float-text-field",
+              "componentes/issel-dropdown",
+              "componentes/issel-dropdown2",
+              "componentes/issel-search-dropdown",
+              "componentes/issel-image-picker",
+              "componentes/issel-asset-container"
+            ]
+          },
+          {
+            "group": "Selección",
+            "pages": [
+              "componentes/issel-toggle",
+              "componentes/issel-toggle-field",
+              "componentes/issel-stepper-field",
+              "componentes/issel-radio-card",
+              "componentes/issel-radio-tile",
+              "componentes/issel-filter-bar",
+              "componentes/issel-tab-switcher"
+            ]
+          },
+          {
+            "group": "Datos y estados",
+            "pages": [
+              "componentes/issel-table-widget",
+              "componentes/issel-header-table",
+              "componentes/issel-row-table",
+              "componentes/issel-carousel",
+              "componentes/issel-shimmer",
+              "componentes/issel-circular-progress-indicator"
+            ]
+          },
+          {
+            "group": "Tema y escritorio",
+            "pages": [
+              "componentes/issel-theme-selector",
+              "componentes/issel-desktop-scaffold",
+              "componentes/issel-desktop-caption",
+              "componentes/issel-caption-button",
+              "componentes/issel-breadcrumbs",
+              "componentes/issel-navigation-pane",
+              "componentes/gradient-border-painter"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Ejemplos",
+        "groups": [
+          {
+            "group": "Aplicaciones y recetas",
+            "pages": [
+              "ejemplos/primera-app",
+              "ejemplos/formulario-clientes",
+              "ejemplos/componentes-reutilizables",
+              "ejemplos/recetas"
+            ]
+          },
+          {
+            "group": "Recursos",
+            "pages": [
+              "recursos"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "navbar": {
+    "links": [
+      {
+        "label": "GitHub",
+        "href": "https://github.com/IsselCode/issel_code_widgets"
+      }
+    ],
+    "primary": {
+      "type": "button",
+      "label": "Empezar",
+      "href": "/quickstart"
+    }
+  },
+  "contextual": {
+    "options": [
+      "copy",
+      "view",
+      "chatgpt",
+      "claude"
+    ]
+  },
+  "footer": {
+    "socials": {
+      "github": "https://github.com/IsselCode/issel_code_widgets"
+    }
+  }
+}

@@ -1,0 +1,70 @@
+# IsselDesktopCaption
+
+Barra global con título/breadcrumbs y slots de acciones, arrastre y ventana.
+
+**Categoría:** Escritorio. **Uso:** Marca y controles globales del shell.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/desktop/issel_desktop_caption.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselDesktopCaption({
+    super.key,
+    required this.title,
+    this.leading,
+    this.trailing,
+    this.actions = const [],
+    this.windowControls,
+    this.dragAreaBuilder,
+    this.backgroundColor,
+    this.height = 32,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `title` | `Widget` | Sí | `—` |  |
+| `leading` | `Widget?` | No | `null` |  |
+| `trailing` | `Widget?` | No | `null` |  |
+| `actions` | `List<Widget>` | No | `const []` |  |
+| `windowControls` | `Widget?` | No | `null` |  |
+| `dragAreaBuilder` | `Widget Function(BuildContext context, Widget child)?` | No | `null` |  |
+| `backgroundColor` | `Color?` | No | `null` |  |
+| `height` | `double` | No | `32` |  |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_desktop_caption_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget desktopCaptionExample(VoidCallback onMenu) => IsselDesktopCaption(
+      title: const Text('Inventario'),
+      leading: IsselCaptionButton(
+        icon: const Icon(Icons.menu),
+        tooltip: 'Abrir menú',
+        onPressed: onMenu,
+      ),
+    );
+```
+
+## Comportamiento y límites
+
+- title es un Widget. leading/trailing/actions/windowControls se colocan alrededor de su área expandida.
+- dragAreaBuilder envuelve el área del título; las acciones y controles de ventana quedan fuera.
+- No ejecuta plugins. La app proporciona dragAreaBuilder y windowControls si necesita arrastre o acciones nativas.
+- height debe ser al menos 28 y corresponder al config del shell. Su fondo por defecto es scaffoldBackgroundColor.
+- Un título interactivo dentro de un área arrastrable requiere revisar hit testing y el adaptador utilizado.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

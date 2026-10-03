@@ -1,0 +1,26 @@
+{
+  "name": "issel-code-widgets-docs",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Documentación en español de Issel Code Widgets, generada desde los Markdown de assets.",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "docs:sync": "node scripts/sync-docs.mjs",
+    "brand:sync": "node scripts/prepare-brand.mjs",
+    "predev": "npm run brand:sync && npm run docs:sync",
+    "dev": "mint dev --no-open",
+    "check": "node scripts/check-docs.mjs",
+    "test": "node --test scripts/*.test.mjs",
+    "validate": "npm run brand:sync && npm run docs:sync && npm run check && mint validate && mint broken-links"
+  },
+  "dependencies": {
+    "marked": "^18.0.14"
+  },
+  "devDependencies": {
+    "@mdx-js/mdx": "^3.1.1",
+    "mint": "4.2.974"
+  }
+}

@@ -1,0 +1,79 @@
+---
+title: "IsselDropdown2"
+description: "Dropdown integrado con FormField<T> para validar una selección."
+sidebarTitle: "IsselDropdown2"
+---
+
+Dropdown integrado con FormField&lt;T> para validar una selección.
+
+**Categoría:** Formularios. **Uso:** Selección obligatoria o validada dentro de Form.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_dropdown_2.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+IsselDropdown2({
+    super.key,
+    required this.items,
+    required this.hintText,
+    required this.onChanged,
+    this.height = 50,
+    this.value,
+    this.color,
+    FormFieldValidator<T>? validator,
+    AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `items` | `List<DropdownMenuItem<T>>?` | Sí | `—` | Opciones disponibles en el dropdown. |
+| `hintText` | `String` | Sí | `—` | Texto mostrado cuando no hay valor seleccionado. |
+| `onChanged` | `void Function(T?)?` | Sí | `—` | Callback invocado cuando cambia el valor seleccionado. |
+| `height` | `double` | No | `50` | Altura del contenedor del dropdown. |
+| `value` | `T?` | No | `null` | Valor inicial o seleccionado del campo. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional.  Si es null, usa [ColorScheme.surface]. |
+| `validator` | `FormFieldValidator<T>?` | No | `null` | Devuelve null para válido o un mensaje de error. |
+| `autovalidateMode` | `AutovalidateMode` | No | `AutovalidateMode.disabled` | Política de autovalidación del FormField. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget validatedDropdownExample(
+  String? value,
+  ValueChanged<String?> onChanged,
+) =>
+    IsselDropdown2<String>(
+      value: value,
+      hintText: 'Tipo',
+      items: const [
+        DropdownMenuItem(value: 'person', child: Text('Persona')),
+        DropdownMenuItem(value: 'company', child: Text('Empresa')),
+      ],
+      validator: (value) => value == null ? 'Selecciona un tipo' : null,
+      onChanged: onChanged,
+    );
+```
+
+## Comportamiento y límites
+
+- value inicializa initialValue; después se muestra state.value. Una reconstrucción con otro value no sincroniza automáticamente el estado.
+- Si cambias la selección desde fuera, utiliza una GlobalKey&lt;FormFieldState&lt;T>> y didChange, o recrea el campo con una clave apropiada.
+- El callback interno siempre existe y llama state.didChange. onChanged: null no deshabilita el DropdownButton; usa un bloqueo de interacción cuando corresponda.
+- El mensaje de error ocupa espacio adicional debajo de height. No proporciona onSaved ni isExpanded.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](/ejemplos/componentes-reutilizables) y [formularios](/guia/formularios-y-estados).

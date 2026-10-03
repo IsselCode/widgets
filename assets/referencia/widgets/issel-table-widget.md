@@ -1,0 +1,74 @@
+# IsselTableWidget
+
+Tabla de encabezado fijo y filas con desplazamiento vertical.
+
+**Categoría:** Datos. **Uso:** Conjuntos pequeños o acotados de datos tabulares.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_table/issel_table_widget.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+IsselTableWidget({
+    super.key,
+    required this.header,
+    required this.rows,
+    this.onTapRow,
+    this.color,
+    this.showHoverRow = true,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `header` | `IsselHeaderTable` | Sí | `—` | Encabezado de la tabla. |
+| `rows` | `List<IsselRowTable>` | Sí | `—` | Filas mostradas debajo del encabezado. |
+| `onTapRow` | `Function(int index)?` | No | `null` | Callback invocado al tocar una fila. |
+| `color` | `Color?` | No | `null` | Color de fondo opcional de la tabla. |
+| `showHoverRow` | `bool` | No | `true` | Indica si se muestra el resaltado al pasar el cursor sobre una fila. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_table_widget_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget tableExample(BuildContext context, ValueChanged<int> onOpen) => SizedBox(
+      height: 280,
+      child: IsselTableWidget(
+        header: const IsselHeaderTable(titleHeaders: ['Nombre', 'Estado']),
+        rows: [
+          IsselRowTable(cells: [
+            IsselPill(
+                text: 'Ana',
+                color: Theme.of(context).colorScheme.surfaceContainer),
+            IsselPill(
+                text: 'Activo',
+                color: Theme.of(context).colorScheme.surfaceContainer),
+          ])
+        ],
+        onTapRow: onOpen,
+      ),
+    );
+```
+
+## Comportamiento y límites
+
+- Incluye Expanded en un Column: requiere altura disponible finita. Usa SizedBox(height: ...) o Expanded en un padre acotado.
+- Cada fila debe tener como máximo tantas celdas como títulos. Para alineación consistente utiliza la misma cantidad.
+- No integra scroll horizontal, paginación, ordenación ni virtualización. Construye todas las filas mediante Column.
+- showHoverRow controla resaltado. onTapRow recibe el índice de la lista actual; la app lo traduce a una entidad.
+- Con showHoverRow: true y sin onTapRow el InkWell conserva una closure vacía para hover. No presupongas una acción de apertura.
+- Ajusta color de tabla/header/celdas según la capa visual y considera una lista móvil si no caben las columnas.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

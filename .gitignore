@@ -1,0 +1,26 @@
+# Dependencias y cachés de herramientas
+node_modules/
+.mintlify/
+.mint/
+.cache/
+.codex/
+.agents/
+.idea/
+test-results/
+coverage/
+dist/
+build/
+
+# Configuración local y secretos
+.env
+.env.*
+!.env.example
+AGENTS.md
+skills-lock.json
+
+# Artefactos de desarrollo y del sistema
+preview*.png
+*.log
+*.iml
+.DS_Store
+Thumbs.db

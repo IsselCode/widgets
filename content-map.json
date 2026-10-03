@@ -1,0 +1,378 @@
+[
+  {
+    "source": "assets/referencia/widgets/gradient-border-painter.md",
+    "route": "componentes/gradient-border-painter",
+    "title": "GradientBorderPainter",
+    "description": "Utilidad de pintura exportada por el barrel público. Extiende CustomPainter; no es un widget de pantalla.",
+    "sidebarTitle": "GradientBorderPainter",
+    "category": "Utilidades"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-action-box.md",
+    "route": "componentes/issel-action-box",
+    "title": "IsselActionBox",
+    "description": "Tarjeta pulsable con imagen local, título y acción opcional de eliminar.",
+    "sidebarTitle": "IsselActionBox",
+    "category": "Acciones"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-asset-container.md",
+    "route": "componentes/issel-asset-container",
+    "title": "IsselAssetContainer",
+    "description": "Contenedor de asset local o favicon de un dominio, con sombra.",
+    "sidebarTitle": "IsselAssetContainer",
+    "category": "Imágenes"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-breadcrumbs.md",
+    "route": "componentes/issel-breadcrumbs",
+    "title": "IsselBreadcrumbs",
+    "description": "Ruta visual acotada con etiquetas, navegación y copia opcionales.",
+    "sidebarTitle": "IsselBreadcrumbs",
+    "category": "Escritorio"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-button.md",
+    "route": "componentes/issel-button",
+    "title": "IsselButton",
+    "description": "Acción principal basada en FilledButton, con texto, foco y tamaño configurable.",
+    "sidebarTitle": "IsselButton",
+    "category": "Acciones"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-caption-button.md",
+    "route": "componentes/issel-caption-button",
+    "title": "IsselCaptionButton",
+    "description": "IconButton compacto con tooltip, foco y tamaño configurables.",
+    "sidebarTitle": "IsselCaptionButton",
+    "category": "Escritorio"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-carousel.md",
+    "route": "componentes/issel-carousel",
+    "title": "IsselCarousel",
+    "description": "Carrusel horizontal con índices virtuales y escala para la selección.",
+    "sidebarTitle": "IsselCarousel",
+    "category": "Datos"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-circular-progress-indicator.md",
+    "route": "componentes/issel-circular-progress-indicator",
+    "title": "IsselCircularProgressIndicator",
+    "description": "Indicador indeterminado animado con borde degradado.",
+    "sidebarTitle": "IsselCircularProgressIndicator",
+    "category": "Estados"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-desktop-caption.md",
+    "route": "componentes/issel-desktop-caption",
+    "title": "IsselDesktopCaption",
+    "description": "Barra global con título/breadcrumbs y slots de acciones, arrastre y ventana.",
+    "sidebarTitle": "IsselDesktopCaption",
+    "category": "Escritorio"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-desktop-scaffold.md",
+    "route": "componentes/issel-desktop-scaffold",
+    "title": "IsselDesktopScaffold",
+    "description": "Shell que combina sidebar, caption y contenido con adaptación al ancho.",
+    "sidebarTitle": "IsselDesktopScaffold",
+    "category": "Escritorio"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-dropdown.md",
+    "route": "componentes/issel-dropdown",
+    "title": "IsselDropdown",
+    "description": "Dropdown simple que presenta el value controlado por la app.",
+    "sidebarTitle": "IsselDropdown",
+    "category": "Formularios"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-dropdown2.md",
+    "route": "componentes/issel-dropdown2",
+    "title": "IsselDropdown2",
+    "description": "Dropdown integrado con FormField<T> para validar una selección.",
+    "sidebarTitle": "IsselDropdown2",
+    "category": "Formularios"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-filter-bar.md",
+    "route": "componentes/issel-filter-bar",
+    "title": "IsselFilterBar",
+    "description": "Opciones de filtro desplazables horizontalmente, basadas en pills.",
+    "sidebarTitle": "IsselFilterBar",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-float-text-field.md",
+    "route": "componentes/issel-float-text-field",
+    "title": "IsselFloatTextField",
+    "description": "Campo de lectura que abre un editor flotante mediante una ruta transparente.",
+    "sidebarTitle": "IsselFloatTextField",
+    "category": "Formularios"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-header-action-tile.md",
+    "route": "componentes/issel-header-action-tile",
+    "title": "IsselHeaderActionTile",
+    "description": "Encabezado de título y subtítulo con un botón lateral.",
+    "sidebarTitle": "IsselHeaderActionTile",
+    "category": "Acciones"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-header-table.md",
+    "route": "componentes/issel-header-table",
+    "title": "IsselHeaderTable",
+    "description": "Encabezado de tabla construido con pills y columnas de igual ancho.",
+    "sidebarTitle": "IsselHeaderTable",
+    "category": "Datos"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-image-picker.md",
+    "route": "componentes/issel-image-picker",
+    "title": "IsselImagePicker",
+    "description": "Selector de imagen con bytes, Form, carga y limpieza.",
+    "sidebarTitle": "IsselImagePicker",
+    "category": "Imágenes"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-info-field.md",
+    "route": "componentes/issel-info-field",
+    "title": "IsselInfoField",
+    "description": "Etiqueta y valor destacado en dos bloques de ancho equivalente.",
+    "sidebarTitle": "IsselInfoField",
+    "category": "Información"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-info-field2.md",
+    "route": "componentes/issel-info-field2",
+    "title": "IsselInfoField2",
+    "description": "Información con icono, etiqueta y acción de copiar opcional.",
+    "sidebarTitle": "IsselInfoField2",
+    "category": "Información"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-navigation-pane.md",
+    "route": "componentes/issel-navigation-pane",
+    "title": "IsselNavigationPane",
+    "description": "Menú lateral con selección controlada, destinos desplazables y slots.",
+    "sidebarTitle": "IsselNavigationPane",
+    "category": "Escritorio"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-pill.md",
+    "route": "componentes/issel-pill",
+    "title": "IsselPill",
+    "description": "Superficie breve para texto o un widget, con acción opcional.",
+    "sidebarTitle": "IsselPill",
+    "category": "Información"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-radio-card.md",
+    "route": "componentes/issel-radio-card",
+    "title": "IsselRadioCard",
+    "description": "Opción de grupo representada por una tarjeta cuadrada con asset.",
+    "sidebarTitle": "IsselRadioCard",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-radio-tile.md",
+    "route": "componentes/issel-radio-tile",
+    "title": "IsselRadioTile",
+    "description": "Opción textual de grupo con fondo de selección.",
+    "sidebarTitle": "IsselRadioTile",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-row-table.md",
+    "route": "componentes/issel-row-table",
+    "title": "IsselRowTable",
+    "description": "Fila de celdas IsselPill distribuidas con ancho equivalente.",
+    "sidebarTitle": "IsselRowTable",
+    "category": "Datos"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-search-dropdown.md",
+    "route": "componentes/issel-search-dropdown",
+    "title": "IsselSearchDropdown",
+    "description": "Selector con búsqueda, opciones externas y lista expandible u overlay.",
+    "sidebarTitle": "IsselSearchDropdown",
+    "category": "Formularios"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-shimmer.md",
+    "route": "componentes/issel-shimmer",
+    "title": "IsselShimmer",
+    "description": "Placeholder rectangular que muestra animación tras un retraso.",
+    "sidebarTitle": "IsselShimmer",
+    "category": "Estados"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-stepper-field.md",
+    "route": "componentes/issel-stepper-field",
+    "title": "IsselStepperField",
+    "description": "Entrada numérica con botones, límites e incremento entero o decimal.",
+    "sidebarTitle": "IsselStepperField",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-tab-switcher.md",
+    "route": "componentes/issel-tab-switcher",
+    "title": "IsselTabSwitcher",
+    "description": "Alternancia de dos estados con indicador animado.",
+    "sidebarTitle": "IsselTabSwitcher",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-table-widget.md",
+    "route": "componentes/issel-table-widget",
+    "title": "IsselTableWidget",
+    "description": "Tabla de encabezado fijo y filas con desplazamiento vertical.",
+    "sidebarTitle": "IsselTableWidget",
+    "category": "Datos"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-text-form-field.md",
+    "route": "componentes/issel-text-form-field",
+    "title": "IsselTextFormField",
+    "description": "Campo de texto integrado con FormField<String> y un TextField interno.",
+    "sidebarTitle": "IsselTextFormField",
+    "category": "Formularios"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-theme-selector.md",
+    "route": "componentes/issel-theme-selector",
+    "title": "IsselThemeSelector",
+    "description": "Selector responsive de sistema, claro y oscuro con miniaturas de las paletas.",
+    "sidebarTitle": "IsselThemeSelector",
+    "category": "Tema"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-toggle.md",
+    "route": "componentes/issel-toggle",
+    "title": "IsselToggle",
+    "description": "Interruptor visual booleano controlado por la app.",
+    "sidebarTitle": "IsselToggle",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/referencia/widgets/issel-toggle-field.md",
+    "route": "componentes/issel-toggle-field",
+    "title": "IsselToggleField",
+    "description": "Etiqueta y toggle en una superficie de una línea.",
+    "sidebarTitle": "IsselToggleField",
+    "category": "Selección"
+  },
+  {
+    "source": "assets/ejemplos/03-componentes-reutilizables.md",
+    "route": "ejemplos/componentes-reutilizables",
+    "title": "Componentes reutilizables para tus ejemplos",
+    "description": "Compón superficies, estados, búsqueda, tablas y acciones de guardado.",
+    "sidebarTitle": "Componentes reutilizables"
+  },
+  {
+    "source": "assets/ejemplos/02-formulario-clientes.md",
+    "route": "ejemplos/formulario-clientes",
+    "title": "Formulario de clientes: feature completa",
+    "description": "Conecta entidad, repositorio, controlador y formulario en una feature completa.",
+    "sidebarTitle": "Formulario de clientes"
+  },
+  {
+    "source": "assets/ejemplos/01-primera-app.md",
+    "route": "ejemplos/primera-app",
+    "title": "Primera aplicación completa",
+    "description": "Construye una aplicación con configuración mutable, tema y controles Issel.",
+    "sidebarTitle": "Primera app"
+  },
+  {
+    "source": "assets/ejemplos/04-recetas.md",
+    "route": "ejemplos/recetas",
+    "title": "Recetas de integración",
+    "description": "Integra imágenes, assets, fuentes, búsqueda remota y diálogos.",
+    "sidebarTitle": "Recetas de integración"
+  },
+  {
+    "source": "assets/guia/04-arquitectura.md",
+    "route": "guia/arquitectura",
+    "title": "Arquitectura por features",
+    "description": "Organiza features, presentación MVVM, dominio y datos.",
+    "sidebarTitle": "Arquitectura"
+  },
+  {
+    "source": "assets/guia/07-escritorio.md",
+    "route": "guia/escritorio",
+    "title": "Escritorio y adaptación móvil",
+    "description": "Compón caption, menú y breadcrumbs con adaptación móvil.",
+    "sidebarTitle": "Escritorio"
+  },
+  {
+    "source": "assets/guia/08-formularios-y-estados.md",
+    "route": "guia/formularios-y-estados",
+    "title": "Formularios, selección y estados",
+    "description": "Integra validación, selección, carga, errores y guardado.",
+    "sidebarTitle": "Formularios y estados"
+  },
+  {
+    "source": "assets/guia/02-instalacion.md",
+    "route": "guia/instalacion",
+    "title": "Instalación y compatibilidad",
+    "description": "Agrega el paquete, elige los imports y prepara la skill.",
+    "sidebarTitle": "Instalación"
+  },
+  {
+    "source": "assets/guia/01-introduccion.md",
+    "route": "guia/introduccion",
+    "title": "Qué son Issel Code Widgets y su skill",
+    "description": "Conoce el paquete Flutter, la skill y cómo se complementan.",
+    "sidebarTitle": "Introducción"
+  },
+  {
+    "source": "assets/guia/06-navegacion.md",
+    "route": "guia/navegacion",
+    "title": "Navegación con IsselNavigationService",
+    "description": "Gestiona rutas, resultados tipados y retroceso.",
+    "sidebarTitle": "Navegación"
+  },
+  {
+    "source": "assets/guia/09-preguntas-frecuentes.md",
+    "route": "guia/preguntas-frecuentes",
+    "title": "Preguntas frecuentes y soluciones",
+    "description": "Resuelve problemas de instalación, layout, estado y navegación.",
+    "sidebarTitle": "Preguntas frecuentes"
+  },
+  {
+    "source": "assets/guia/05-tema-y-configuracion.md",
+    "route": "guia/tema-y-configuracion",
+    "title": "Tema, configuración y patrón visual",
+    "description": "Configura paletas, tipografía, superficies y apariencia.",
+    "sidebarTitle": "Tema y configuración"
+  },
+  {
+    "source": "assets/guia/03-uso-de-la-skill.md",
+    "route": "guia/uso-de-la-skill",
+    "title": "Usar la skill Issel Code Widgets",
+    "description": "Describe interfaces y aprende el flujo de implementación con la skill.",
+    "sidebarTitle": "Usar la skill"
+  },
+  {
+    "source": "assets/README.md",
+    "route": "recursos",
+    "title": "Documentación de Issel Code Widgets",
+    "description": "Explora las guías, los ejemplos y la referencia de Issel Code Widgets.",
+    "sidebarTitle": "Recursos"
+  },
+  {
+    "source": "assets/referencia/api-transversal.md",
+    "route": "referencia/api-transversal",
+    "title": "API de configuración, tema, navegación y core",
+    "description": "Consulta las APIs públicas de app, tema, navegación, escritorio y core.",
+    "sidebarTitle": "API transversal"
+  },
+  {
+    "source": "assets/referencia/README.md",
+    "route": "referencia/componentes",
+    "title": "Referencia de componentes",
+    "description": "Encuentra el constructor, las propiedades y los límites de cada componente.",
+    "sidebarTitle": "Componentes"
+  }
+]

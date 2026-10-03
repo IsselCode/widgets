@@ -1,0 +1,75 @@
+---
+title: "Tu primera aplicación"
+sidebarTitle: "Inicio rápido"
+description: "Prepara una app Flutter, agrega Issel Code Widgets y ejecuta el ejemplo con formulario y selector de tema."
+---
+
+Necesitas Flutter y Git. Usa un SDK moderno y valida la combinación con el paquete.
+Esta documentación no establece un mínimo que no se haya probado.
+Revisa [instalación y compatibilidad](/guia/instalacion) si aún no tienes el entorno preparado.
+
+<Steps>
+  <Step title="Crea el proyecto">
+    Abre una terminal y crea tu aplicación.
+    ```bash
+    flutter create mi_app
+    cd mi_app
+    ```
+  </Step>
+  <Step title="Agrega el paquete">
+    Añade la dependencia al bloque `dependencies` de `pubspec.yaml`.
+    Usa la dependencia del repositorio del paquete.
+    ```yaml
+    dependencies:
+      flutter:
+        sdk: flutter
+      issel_code_widgets:
+        git: https://github.com/IsselCode/issel_code_widgets.git
+    ```
+    Resuelve las dependencias.
+    ```bash
+    flutter pub get
+    ```
+    Si tienes una copia local del paquete, puedes usar una [dependencia por ruta](/guia/instalacion).
+  </Step>
+  <Step title="Configura el arranque y la primera vista">
+    Sigue el ejemplo de [primera aplicación completa](/ejemplos/primera-app).
+    Incluye los archivos, imports y la configuración de `AppIsselController`.
+    La raíz comparte una instancia para el tema y la navegación.
+  </Step>
+  <Step title="Ejecuta y prueba el formulario">
+    Abre la aplicación.
+    ```bash
+    flutter run
+    ```
+    Deja vacío el nombre para comprobar la validación.
+    Escribe un valor, guarda y cambia entre los modos claro, oscuro y sistema.
+    Prueba la vista con una ventana amplia y con un ancho móvil.
+  </Step>
+</Steps>
+
+## Usa los imports públicos
+
+En las vistas y la composición de la app, importa Flutter y el catálogo del paquete.
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+```
+
+En datos y dominio, importa los resultados y errores desde `issel_core.dart`.
+
+```dart
+import 'package:issel_code_widgets/issel_core.dart';
+```
+
+## Continúa con tu aplicación
+
+<Columns cols={2}>
+  <Card title="Un formulario de clientes" icon="clipboard-list" href="/ejemplos/formulario-clientes">
+    Conecta entidad, repositorio, controlador y vista.
+  </Card>
+  <Card title="Trabaja con la skill" icon="terminal" href="/guia/uso-de-la-skill">
+    Describe la pantalla y reutiliza las convenciones de tu proyecto.
+  </Card>
+</Columns>

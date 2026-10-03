@@ -1,0 +1,140 @@
+---
+title: "Preguntas frecuentes y soluciones"
+description: "Resuelve problemas de instalación, layout, estado y navegación."
+sidebarTitle: "Preguntas frecuentes"
+---
+
+## ¿Necesito instalar la skill para usar el paquete?
+
+Puedes escribir Flutter con el paquete directamente. La skill guía al agente durante la implementación. Se instala en el entorno del agente; la dependencia del paquete se declara en `pubspec.yaml`.
+
+## ¿Agregar la dependencia instala también la skill?
+
+No. Necesitas la distribución completa de la skill, con `SKILL.md` y referencias, además de la dependencia Flutter. La [guía de instalación](/guia/instalacion) explica las dos partes.
+
+## ¿Qué diferencia hay entre `issel-code-widgets` e `issel_code_widgets`?
+
+El primero es el nombre de la skill y se utiliza en la petición al agente. El segundo es el nombre Dart del paquete y aparece en el pubspec/import. Las clases se llaman `IsselButton`, `IsselDropdown2`, etc.; comprueba su ortografía en la referencia.
+
+## ¿Puedo añadirlo a una aplicación con Riverpod, Provider o un router propio?
+
+Sí. Los widgets consumen el tema del contexto y reciben callbacks/datos. La skill conserva la arquitectura y gestor de estado adoptados; no necesita añadir otro por usar el kit. Reutiliza el router existente si el producto lo requiere y mantén navegación fuera del dominio.
+
+## ¿Por qué no aparece `AppResult` al importar los widgets?
+
+Está en la biblioteca dedicada:
+
+```dart
+import 'package:issel_code_widgets/issel_core.dart';
+```
+
+El barrel de widgets no lo reexporta. Comprueba el import y los exports de la biblioteca dedicada.
+
+## `flutter pub get` falla
+
+Comprueba la URL y el acceso a GitHub, o la ruta local del paquete. Usa `flutter pub deps` para revisar la resolución. Utiliza un SDK moderno y valida tu combinación de Flutter, Dart y el paquete. Esta documentación no establece un mínimo efectivo que no se haya probado.
+
+## El botón o selector produce un error de ancho infinito
+
+`IsselButton`, `IsselTabSwitcher` y otros controles utilizan ancho completo por defecto. En un `Row`, dales un ancho concreto o envuélvelos en `Expanded` dentro de un padre con ancho acotado. El carrusel también necesita ancho finito.
+
+## La tabla falla dentro de un scroll
+
+`IsselTableWidget` contiene `Expanded`, por lo que necesita alto finito. En un `SingleChildScrollView` vertical usa `SizedBox(height: 320, child: ...)`. La tabla no incorpora scroll horizontal: constrúyelo en el padre si necesitas ancho mínimo. La [receta de tablas](/ejemplos/recetas) y `ResponsiveRecords` muestran ambas alternativas.
+
+## Las columnas de la tabla no coinciden
+
+Aunque el assert admite una fila con menos celdas que el encabezado, cada fila reparte su ancho según su propia cantidad de celdas. Usa la misma cantidad en todas las filas y el encabezado. `cells` recibe `List<IsselPill>`; para un widget personalizado utiliza `IsselPill(widget: ...)`.
+
+## El dropdown de búsqueda no filtra
+
+Debes actualizar `items` en respuesta a `onSearchChanged` o `onSearchSubmitted`. Filtra desde la lista completa o llama al repositorio. El ejemplo `CountrySearchDemo` implementa búsqueda local, y la receta de `NameSearchController` muestra debounce y descarte de respuestas antiguas.
+
+## Faltan resultados al desplegar el buscador
+
+`maxItemsToShow` limita el número de opciones construidas. Omítelo para permitir todas las coincidencias con scroll. Una búsqueda cerrada puede conservar la consulta externa mientras el campo interno se recrea vacío; define cómo restablecerla.
+
+## Cambiar `value` no actualiza `IsselDropdown2`
+
+Su valor visible se conserva en `FormFieldState`. Usa una clave de campo y `didChange` desde un callback, o recrea el campo cuando cambies el origen de la selección. Una reconstrucción del padre por sí sola no sincroniza ese estado. `Form.reset` vuelve a su valor inicial.
+
+## Poner `onChanged: null` no deshabilita todos los selectores
+
+Los controles tienen contratos distintos. El dropdown simple y toggle sí bloquean sus acciones con null. `IsselDropdown2`, buscador y radios mantienen callbacks internos habilitados. Usa un bloqueo explícito de interacción o un control con el contrato adecuado; revisa también foco y teclado.
+
+## No se muestra la validación de texto al escribir
+
+El campo de texto actual sincroniza mediante `setValue`. No presupongas las señales de interacción de `TextFormField` estándar. Ejecuta `FormState.validate()` al enviar y prueba la política de autovalidación elegida. El mensaje agrega espacio debajo del campo; evita recortarlo con una altura total fija.
+
+## El formulario queda habilitado durante guardar
+
+Reconstruye desde el estado del controlador, utiliza `onTap: isSaving ? null : onSave` y bloquea campos cuando lo requiera el flujo. Protege también la operación en el controlador. Las acciones que devuelven resultados asíncronos deben comprobar `isDisposed` antes de mutar y `mounted` antes de usar la vista.
+
+## El tema cambia, pero parte de la app conserva colores antiguos
+
+Utiliza la misma instancia de tema en MaterialApp y controles. Las vistas deben leer `Theme.of(context)` en vez de guardar colores en campos que no se actualicen. La raíz escucha al controlador de app. Si cambias sólo `lightTheme`, la variante oscura conserva su propia configuración.
+
+## El modo sistema no aplica un color a ambos temas
+
+El controlador del paquete actualiza la variante que recibe el método. La regla de edición común de la skill debe implementarse en tu fachada: en modo sistema copia sólo el rol editado a las dos paletas y conserva el brillo de cada una. La [primera app](/ejemplos/primera-app) muestra ese patrón.
+
+## La tarjeta y el campo parecen una sola superficie
+
+Comprueba la capa: Scaffold → `surface` → `surfaceContainer` → `surface`. El paquete no deduce la profundidad de cada widget. Configura los colores del campo según su contenedor y evita dos capas consecutivas del mismo rol.
+
+## Cambiar el radio del tema no modifica todos los widgets
+
+Muchos controles fijan su radio en 10. `IsselThemeConfig.borderRadius` configura ListTileTheme y `cardBorderRadius` CardThemeData. Los widgets con parámetro de radio se personalizan mediante ese parámetro; los demás requieren una composición o cambio explícito del componente.
+
+## El indicador ignora `width`, `height` o `color`
+
+Su build utiliza 24 × 24 y `primary`. La firma expone esos parámetros, pero no los aplica. Consulta su ficha y usa otro indicador si necesitas ese contrato.
+
+## El carrusel falla con una aserción de precisión
+
+La implementación usa un millón de páginas virtuales. Si encuentras una aserción en `RenderSliverFixedExtentBoxAdaptor.computeMaxScrollOffset`, comprueba el layout y el SDK de tu aplicación. Ejecuta la interacción completa del carrusel; la compilación estática de su constructor no verifica ese comportamiento.
+
+## No aparece una imagen local o falla el favicon
+
+Comprueba la ruta del asset y su declaración. En `IsselAssetContainer`, `network` es un dominio para favicon Google S2; proporciona también `asset` porque el fallback actual lo fuerza con `!`. `network` no acepta una URL arbitraria como fuente de una imagen de producto.
+
+## `onTap` del ImagePicker ejecuta mi acción y después abre el selector
+
+Ese callback es una notificación de pulsación. Para sustituir el selector utiliza `pickImage`. Devolver null representa cancelación y conserva la imagen anterior. La imagen existente por `imageProvider` no se transforma en bytes para la validación.
+
+## El selector de tema no conserva la preferencia después de reiniciar
+
+Sí puedes conservarla usando [`shared_preferences`](https://pub.dev/packages/shared_preferences). El selector cambia el estado del controlador en memoria; la aplicación se encarga de guardar y recuperar esa elección. La persistencia no está incorporada automáticamente al paquete Issel.
+
+Para integrarla:
+
+1. Añade `shared_preferences` a las dependencias de tu aplicación. Para una integración nueva puedes usar `SharedPreferencesAsync`.
+2. En `onChanged`, guarda `mode.name` en una clave como `theme_mode`: `await preferences.setString('theme_mode', mode.name)`.
+3. Al arrancar, después de `WidgetsFlutterBinding.ensureInitialized()`, lee `await preferences.getString('theme_mode')` y convierte `light`, `dark` o `system` al `ThemeMode` correspondiente. Si no existe una preferencia válida, utiliza `ThemeMode.system`.
+4. Aplica el modo al controlador antes de mostrar la primera pantalla. Con la fachada de la [primera app](/ejemplos/primera-app), utiliza `app.setThemeMode(mode)` y conserva esa misma instancia en la raíz.
+
+Guardar `system` conserva la elección de seguir al sistema, aunque éste cambie entre claro y oscuro. El callback puede iniciar una función asíncrona, pero el selector no espera su resultado: maneja los errores de escritura en esa función y evita que guardados simultáneos de cambios rápidos sobrescriban una elección más reciente.
+
+## La navegación lanza StateError
+
+Conecta `navigation.navigatorKey` a MaterialApp y espera a que el Navigator se monte. Conserva la misma instancia durante la vida de la app. Crear otro servicio dentro de una vista produce una clave que no pertenece al árbol montado.
+
+## `goBack()` devuelve true y sigo en la pantalla
+
+El resultado significa que la solicitud fue atendida. Un `PopScope` puede impedir retirar la ruta y devolver una petición atendida. `canGoBack` indica pila disponible, no autorización de salida.
+
+## La selección del menú no cambia al volver de un detalle
+
+La app debe derivarla del router o de un observador de Navigator. `IsselNavigationPane` sólo presenta `selectedId`; no observa rutas. Mantén también breadcrumbs sincronizados con la ruta activa.
+
+## La caption ocupa dos veces espacio o los controles de ventana no funcionan
+
+El modo normal del shell reserva `config.captionHeight` una vez; quita padding adicional de las vistas. El kit no controla ventanas nativas: necesita el adaptador y plugins del producto. La ejecución web no verifica minimizar, maximizar, arrastrar ni cerrar una ventana nativa.
+
+## Un test espera indefinidamente
+
+Shimmer, progreso y otros componentes animados pueden no quedar en reposo. Utiliza `pump` y avances de tiempo apropiados, o sustituye la carga en la prueba, en vez de llamar `pumpAndSettle` con una animación permanente.
+
+## ¿Cómo mantengo la documentación del paquete?
+
+Revisa los exports públicos, constructores, defaults, comportamiento, ejemplos y notas de compatibilidad. Actualiza las guías y las fichas que describan APIs o límites que hayan cambiado. Ejecuta los ejemplos para comprobar las interacciones que documentas.

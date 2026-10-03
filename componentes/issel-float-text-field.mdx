@@ -1,0 +1,79 @@
+---
+title: "IsselFloatTextField"
+description: "Campo de lectura que abre un editor flotante mediante una ruta transparente."
+sidebarTitle: "IsselFloatTextField"
+---
+
+Campo de lectura que abre un editor flotante mediante una ruta transparente.
+
+**Categoría:** Formularios. **Uso:** Edición breve cuando el producto justifica una interacción flotante.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_float_text_field.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselFloatTextField({
+    super.key,
+    required this.controller,
+    required this.hintText,
+    required this.prefixIcon,
+    this.obscureText = false,
+    this.fillColor,
+    this.height = 60,
+    this.validator,
+    this.onChanged,
+    this.onSubmitted,
+    this.keyboardType,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `controller` | `TextEditingController` | Sí | `—` | Controlador que almacena el texto del campo. |
+| `hintText` | `String` | Sí | `—` | Texto de ayuda mostrado cuando el campo está vacío. |
+| `prefixIcon` | `IconData` | Sí | `—` | Icono mostrado al inicio del campo. |
+| `obscureText` | `bool` | No | `false` | Indica si el texto debe ocultarse como contraseña. |
+| `fillColor` | `Color?` | No | `null` | Color de relleno opcional del campo. |
+| `height` | `double` | No | `60` | Altura del campo. |
+| `validator` | `FormFieldValidator<String>?` | No | `null` | Validador opcional usado por el campo visible. |
+| `onChanged` | `void Function(String value)?` | No | `null` | Callback invocado cuando cambia el texto. |
+| `onSubmitted` | `void Function(String value)?` | No | `null` | Callback invocado cuando se envía el texto. |
+| `keyboardType` | `TextInputType?` | No | `null` | Tipo de teclado que se muestra al editar el campo. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget floatTextFieldExample(TextEditingController controller) =>
+    IsselFloatTextField(
+      controller: controller,
+      hintText: 'Observación breve',
+      prefixIcon: Icons.edit_outlined,
+      validator: (value) =>
+          (value ?? '').trim().isEmpty ? 'Escribe una observación' : null,
+    );
+```
+
+## Comportamiento y límites
+
+- Requiere controller y prefixIcon. La app es dueña del controller externo.
+- El editor centra una zona de hasta 640 px y solicita foco tras completar la transición.
+- Enviar, tocar fuera, retroceder o cerrar el teclado confirman el texto. No hay una acción separada de cancelar en esta implementación.
+- validator pertenece al campo visible; el editor no valida antes de cerrar. onChanged puede ocurrir durante editar y al copiar el texto al controller externo.
+- fillColor se utiliza en el campo visible; el campo de la ruta flotante no recibe actualmente ese override.
+- La vuelta del await en _openOverlay no comprueba mounted. Revisa cierre de la vista y ciclo de vida del controller si usas este widget en un flujo asíncrono.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](/ejemplos/componentes-reutilizables) y [formularios](/guia/formularios-y-estados).

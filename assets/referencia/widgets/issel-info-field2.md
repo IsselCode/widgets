@@ -1,0 +1,64 @@
+# IsselInfoField2
+
+Información con icono, etiqueta y acción de copiar opcional.
+
+**Categoría:** Información. **Uso:** Identificadores, direcciones o datos breves copiables.
+
+Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_info_field_2.dart).
+
+## Constructor
+
+Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
+
+```dart
+const IsselInfoField2({
+    super.key,
+    required this.icon,
+    required this.label,
+    this.copy = false,
+    this.copied,
+    this.height = 50,
+    this.backColor,
+  })
+```
+
+## Propiedades
+
+“Requerido” significa que debes pasar el argumento, incluso cuando su tipo admite `null`. Los valores `null` de color suelen delegar al tema; consulta las notas para el rol efectivo.
+
+| Parámetro | Tipo | Requerido | Default | Descripción |
+| --- | --- | --- | --- | --- |
+| `key` | `Key?` | No | `null` | Identidad del widget en el árbol Flutter. |
+| `icon` | `IconData` | Sí | `—` | Icono mostrado al inicio del campo. |
+| `label` | `String` | Sí | `—` | Texto mostrado y copiado al portapapeles cuando [copy] es true. |
+| `copy` | `bool` | No | `false` | Indica si debe mostrarse el botón para copiar [label]. |
+| `copied` | `VoidCallback?` | No | `null` | Callback invocado después de copiar el texto. |
+| `height` | `double` | No | `50` | Altura total del campo. |
+| `backColor` | `Color?` | No | `null` | Color de fondo opcional del campo. |
+
+## Ejemplo
+
+Este archivo define una función que devuelve el widget. Llámala desde `build` con tus datos/callbacks, y conserva el estado y los recursos en su dueño. No ejecuta callbacks ficticios.
+
+<!-- dart-file: lib/doc_samples/issel_info_field2_example.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+
+Widget infoCopyExample(String reference, VoidCallback onCopyRequested) =>
+    IsselInfoField2(
+      icon: Icons.tag_outlined,
+      label: reference,
+      copy: true,
+      copied: onCopyRequested,
+    );
+```
+
+## Comportamiento y límites
+
+- copy: true muestra una acción que copia label mediante Clipboard.setData.
+- copied se invoca inmediatamente después de iniciar Clipboard.setData; no espera su Future ni garantiza que el sistema completó la copia.
+- El texto utiliza outline. No incorpora ellipsis; revisa contenido largo en una altura fija.
+- Si necesitas confirmación fiable de copia, implementa y espera Clipboard.setData en una acción propia.
+
+Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

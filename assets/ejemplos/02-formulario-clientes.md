@@ -1,0 +1,497 @@
+# Formulario de clientes: feature completa
+
+Este ejemplo permite cargar clientes, validar nombre/correo/tipo, crear uno y mostrar confirmación. El repositorio es de demostración: guarda en memoria y simula una espera breve. El contrato puede implementarse con una API real sin modificar la vista.
+
+Parte de los archivos de la [primera app](01-primera-app.md), conserva su `AppIsselController` y añade los archivos siguientes. El nuevo `main.dart` abre `CustomersDemoApp`.
+
+## Entidad y borrador
+
+La creación recibe un borrador; el id se asigna en datos. Dominio no importa Flutter.
+
+<!-- dart-file: lib/src/customers/domain/entities/customer.dart -->
+```dart
+enum CustomerType { person, company }
+
+class CustomerEntity {
+  const CustomerEntity({
+    required this.id,
+    required this.name,
+    required this.email,
+    required this.type,
+    required this.active,
+  });
+
+  final int id;
+  final String name;
+  final String email;
+  final CustomerType type;
+  final bool active;
+}
+
+class CustomerDraft {
+  const CustomerDraft({
+    required this.name,
+    required this.email,
+    required this.type,
+    required this.active,
+  });
+
+  final String name;
+  final String email;
+  final CustomerType type;
+  final bool active;
+}
+```
+
+## Contrato de repositorio
+
+<!-- dart-file: lib/src/customers/domain/repositories/customer_repository.dart -->
+```dart
+import 'package:issel_code_widgets/issel_core.dart';
+
+import '../entities/customer.dart';
+
+abstract interface class CustomerRepository {
+  Future<AppResult<List<CustomerEntity>>> loadCustomers();
+  Future<AppResult<CustomerEntity>> createCustomer(CustomerDraft draft);
+}
+```
+
+## Fuente en memoria
+
+No hay JSON ni SDK externo, de modo que no se añaden modelos de transporte o datasources vacíos. La validación de correo mostrada es básica para el ejemplo; adapta la regla del producto.
+
+<!-- dart-file: lib/src/customers/data/repositories/memory_customer_repository.dart -->
+```dart
+import 'package:issel_code_widgets/issel_core.dart';
+
+import '../../domain/entities/customer.dart';
+import '../../domain/repositories/customer_repository.dart';
+
+class MemoryCustomerRepository implements CustomerRepository {
+  final _customers = <CustomerEntity>[];
+  int _nextId = 1;
+
+  @override
+  Future<AppResult<List<CustomerEntity>>> loadCustomers() async {
+    await Future<void>.delayed(const Duration(milliseconds: 150));
+    return AppResult.success(List.unmodifiable(_customers));
+  }
+
+  @override
+  Future<AppResult<CustomerEntity>> createCustomer(CustomerDraft draft) async {
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    final name = draft.name.trim();
+    final email = draft.email.trim().toLowerCase();
+    if (name.isEmpty || !email.contains('@')) {
+      return const AppResult.error(AppFailure(
+        message: 'Revisa el nombre y el correo.',
+        code: 'invalid_customer',
+      ));
+    }
+    if (_customers.any((customer) => customer.email == email)) {
+      return const AppResult.error(AppFailure(
+        message: 'Ya existe un cliente con ese correo.',
+        code: 'duplicate_email',
+      ));
+    }
+    final customer = CustomerEntity(
+      id: _nextId++,
+      name: name,
+      email: email,
+      type: draft.type,
+      active: draft.active,
+    );
+    _customers.add(customer);
+    return AppResult.success(customer);
+  }
+}
+```
+
+## Controlador
+
+El controlador devuelve `AppResult` y además mantiene lista, carga y guardado. `load` impide solaparse con otra operación; si el usuario pulsa Guardar repetidamente, `createCustomer` rechaza duplicados aunque la vista ya deshabilite el botón. No conoce contextos, toasts ni rutas.
+
+<!-- dart-file: lib/src/customers/presentation/controllers/customers_controller.dart -->
+```dart
+import 'package:issel_code_widgets/issel_app.dart';
+import 'package:issel_code_widgets/issel_core.dart';
+
+import '../../domain/entities/customer.dart';
+import '../../domain/repositories/customer_repository.dart';
+
+class CustomersController extends IsselController {
+  CustomersController(this.repository);
+
+  final CustomerRepository repository;
+  List<CustomerEntity> customers = const [];
+  AppFailure? loadFailure;
+  bool isLoading = false;
+  bool isSaving = false;
+
+  Future<AppResult<List<CustomerEntity>>> load() async {
+    if (isDisposed) throw StateError('Controlador liberado.');
+    if (isLoading || isSaving) {
+      return const AppResult.error(AppFailure(
+        message: 'Hay una operación en curso.',
+        code: 'operation_in_progress',
+      ));
+    }
+    isLoading = true;
+    loadFailure = null;
+    notifyIfActive();
+    try {
+      final result = await repository.loadCustomers();
+      if (!isDisposed) {
+        switch (result) {
+          case AppSuccess<List<CustomerEntity>>(:final value):
+            customers = value;
+          case AppError<List<CustomerEntity>>(:final failure):
+            loadFailure = failure;
+        }
+      }
+      return result;
+    } finally {
+      if (!isDisposed) {
+        isLoading = false;
+        notifyIfActive();
+      }
+    }
+  }
+
+  Future<AppResult<CustomerEntity>> createCustomer(CustomerDraft draft) async {
+    if (isDisposed) throw StateError('Controlador liberado.');
+    if (isSaving || isLoading) {
+      return const AppResult.error(AppFailure(
+        message: 'Hay una operación en curso.',
+        code: 'operation_in_progress',
+      ));
+    }
+    isSaving = true;
+    notifyIfActive();
+    try {
+      final result = await repository.createCustomer(draft);
+      if (!isDisposed) {
+        if (result case AppSuccess<CustomerEntity>(:final value)) {
+          customers = [...customers, value];
+        }
+      }
+      return result;
+    } finally {
+      if (!isDisposed) {
+        isSaving = false;
+        notifyIfActive();
+      }
+    }
+  }
+}
+```
+
+El guardado puede terminar después de `dispose`; el resultado se devuelve sin mutar ni notificar el controlador. Los fallos esperados llegan como `AppError`; los errores de programación se propagan. `finally` sólo actualiza una instancia activa.
+
+## Vista
+
+La vista es dueña de su controlador de pantalla y de los controllers de texto. Los campos viven dentro de una superficie `surface`, con bloques `surfaceContainer`. El callback de Guardar comprueba `mounted` antes de mostrar feedback. No se recrean Futures desde `build`.
+
+<!-- dart-file: lib/src/customers/presentation/views/customers_view.dart -->
+```dart
+import 'package:flutter/material.dart';
+import 'package:issel_code_widgets/issel_code_widgets.dart';
+import 'package:issel_code_widgets/issel_core.dart';
+
+import '../../domain/entities/customer.dart';
+import '../../domain/repositories/customer_repository.dart';
+import '../controllers/customers_controller.dart';
+
+class CustomersView extends StatefulWidget {
+  const CustomersView({super.key, required this.repository});
+
+  final CustomerRepository repository;
+
+  @override
+  State<CustomersView> createState() => _CustomersViewState();
+}
+
+class _CustomersViewState extends State<CustomersView> {
+  final _formKey = GlobalKey<FormState>();
+  final _name = TextEditingController();
+  final _email = TextEditingController();
+  late final CustomersController _controller;
+  CustomerType? _type;
+  bool _active = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = CustomersController(widget.repository);
+    _controller.load();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _name.dispose();
+    _email.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final text = Theme.of(context).textTheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Clientes')),
+      body: SafeArea(
+        child: AnimatedBuilder(
+          animation: _controller,
+          builder: (context, _) {
+            final busy = _controller.isSaving || _controller.isLoading;
+            return SingleChildScrollView(
+              padding: const EdgeInsets.all(24),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 760),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(20),
+                        decoration: BoxDecoration(
+                          color: colors.surface,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Text('Nuevo cliente', style: text.titleMedium),
+                              const SizedBox(height: 16),
+                              AbsorbPointer(
+                                absorbing: busy,
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.stretch,
+                                  children: [
+                                    const Text('Nombre'),
+                                    const SizedBox(height: 6),
+                                    IsselTextFormField(
+                                      controller: _name,
+                                      hintText: 'Nombre del cliente',
+                                      fillColor: colors.surfaceContainer,
+                                      readOnly: busy,
+                                      validator: (value) =>
+                                          (value ?? '').trim().isEmpty
+                                              ? 'Escribe el nombre'
+                                              : null,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text('Correo'),
+                                    const SizedBox(height: 6),
+                                    IsselTextFormField(
+                                      controller: _email,
+                                      hintText: 'correo@ejemplo.com',
+                                      fillColor: colors.surfaceContainer,
+                                      readOnly: busy,
+                                      keyboardType: TextInputType.emailAddress,
+                                      validator: (value) =>
+                                          (value ?? '').trim().contains('@')
+                                              ? null
+                                              : 'Escribe un correo válido',
+                                    ),
+                                    const SizedBox(height: 12),
+                                    const Text('Tipo de cliente'),
+                                    const SizedBox(height: 6),
+                                    IsselDropdown2<CustomerType>(
+                                      value: _type,
+                                      hintText: 'Selecciona un tipo',
+                                      color: colors.surfaceContainer,
+                                      items: const [
+                                        DropdownMenuItem(
+                                          value: CustomerType.person,
+                                          child: Text('Persona'),
+                                        ),
+                                        DropdownMenuItem(
+                                          value: CustomerType.company,
+                                          child: Text('Empresa'),
+                                        ),
+                                      ],
+                                      onChanged: (value) =>
+                                          setState(() => _type = value),
+                                      validator: (value) => value == null
+                                          ? 'Selecciona el tipo'
+                                          : null,
+                                    ),
+                                    const SizedBox(height: 12),
+                                    IsselToggleField(
+                                      title: 'Activo',
+                                      value: _active,
+                                      backColor: colors.surfaceContainer,
+                                      valueBackColor: colors.surface,
+                                      onChanged: (value) =>
+                                          setState(() => _active = value),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const SizedBox(height: 20),
+                              IsselButton(
+                                text: _controller.isSaving
+                                    ? 'Guardando…'
+                                    : 'Guardar cliente',
+                                onTap: busy ? null : _save,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 24),
+                      Text('Clientes registrados', style: text.titleMedium),
+                      const SizedBox(height: 12),
+                      ..._buildCustomers(context),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  List<Widget> _buildCustomers(BuildContext context) {
+    if (_controller.isLoading) {
+      return const [
+        SizedBox(
+          height: 50,
+          child: IsselShimmer(width: double.infinity, height: 50),
+        )
+      ];
+    }
+    final failure = _controller.loadFailure;
+    if (failure != null) {
+      return [
+        Text(failure.message),
+        const SizedBox(height: 12),
+        IsselButton(
+            text: 'Reintentar',
+            onTap: () {
+              _controller.load();
+            }),
+      ];
+    }
+    if (_controller.customers.isEmpty) {
+      return const [Text('Todavía no hay clientes. Crea el primero arriba.')];
+    }
+    return [
+      for (final customer in _controller.customers)
+        Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: ListTile(
+            title: Text(customer.name),
+            subtitle: Text(customer.email),
+            trailing: SizedBox(
+              width: 90,
+              child: IsselPill(
+                text: customer.active ? 'Activo' : 'Inactivo',
+                height: 36,
+              ),
+            ),
+          ),
+        ),
+    ];
+  }
+
+  Future<void> _save() async {
+    if (!(_formKey.currentState?.validate() ?? false)) return;
+    final result = await _controller.createCustomer(CustomerDraft(
+      name: _name.text,
+      email: _email.text,
+      type: _type!,
+      active: _active,
+    ));
+    if (!mounted) return;
+    switch (result) {
+      case AppSuccess<CustomerEntity>(:final value):
+        _formKey.currentState?.reset();
+        _name.clear();
+        _email.clear();
+        setState(() {
+          _type = null;
+          _active = true;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Cliente ${value.name} creado')),
+        );
+      case AppError<CustomerEntity>(:final failure):
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(failure.message)),
+        );
+    }
+  }
+}
+```
+
+`CustomersView` recibe un repositorio estable para toda su vida. Si tu composición necesita sustituirlo en una vista montada, implementa el cambio y la liberación del controlador mediante `didUpdateWidget`, o crea una vista con una clave nueva.
+
+## Composición y arranque
+
+La raíz mantiene el repositorio de demostración durante su vida. Reconstruir el tema conserva los clientes almacenados en esa instancia.
+
+<!-- dart-file: lib/core/app/customers_demo_app.dart -->
+```dart
+import 'package:flutter/material.dart';
+
+import '../../src/customers/data/repositories/memory_customer_repository.dart';
+import '../../src/customers/presentation/views/customers_view.dart';
+import '../../src/issel/presentation/controllers/app_issel_controller.dart';
+
+class CustomersDemoApp extends StatefulWidget {
+  const CustomersDemoApp({super.key});
+
+  @override
+  State<CustomersDemoApp> createState() => _CustomersDemoAppState();
+}
+
+class _CustomersDemoAppState extends State<CustomersDemoApp> {
+  final _app = AppIsselController();
+  final _repository = MemoryCustomerRepository();
+
+  @override
+  void dispose() {
+    _app.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => AnimatedBuilder(
+        animation: _app,
+        builder: (_, __) => MaterialApp(
+          title: _app.config.title,
+          theme: _app.theme.lightTheme,
+          darkTheme: _app.theme.darkTheme,
+          themeMode: _app.theme.themeMode,
+          navigatorKey: _app.navigation.navigatorKey,
+          home: CustomersView(repository: _repository),
+        ),
+      );
+}
+```
+
+<!-- dart-file: lib/main.dart -->
+```dart
+import 'package:flutter/material.dart';
+
+import 'core/app/customers_demo_app.dart';
+
+void main() => runApp(const CustomersDemoApp());
+```
+
+## Recorrido y variantes
+
+Ejecuta `dart format lib`, `flutter analyze` y `flutter run`. Comprueba el estado vacío, envío incompleto, creación válida, correo duplicado, dos pulsaciones durante el guardado y salida de la pantalla con una operación pendiente. Para verificar error de carga inyecta un repositorio que devuelva `AppResult.error`; la fuente en memoria normal siempre carga con éxito.
+
+Para convertir el formulario en diálogo o ruta que devuelve un cliente, conserva el controlador y reemplaza sólo el efecto de éxito de la vista por `Navigator.of(context).pop(value)` o `app.navigation.goBack(value)`. El caller espera el resultado tipado y actualiza su listado. El dominio no cambia.
+
+Para conectarlo con una API, implementa `CustomerRepository`, serializa el borrador conforme al contrato, convierte la respuesta a `CustomerEntity` y traduce sólo los fallos esperados. Inyecta esa implementación en la raíz; la app de demostración no afirma persistencia después de cerrar o recargar.
