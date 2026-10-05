@@ -77,6 +77,8 @@ import 'package:issel_code_widgets/issel_code_widgets.dart';
 
 ## Preparar la skill
 
+Puedes [descargar `issel-code-widgets.rar`](https://firebasestorage.googleapis.com/v0/b/issel-academy-d2bff.firebasestorage.app/o/docs_downloads%2Fissel-code-widgets.rar?alt=media&token=4725ebad-13fe-4d5d-99e1-22aa1111ea50) y extraer la carpeta completa de la skill en la ruta indicada a continuación.
+
 Obtén la carpeta completa de la skill de su distribuidor y conserva esta estructura:
 
 ```text
@@ -90,8 +92,6 @@ issel-code-widgets/
     escritorio.md
     patron-visual.md
 ```
-
-Necesitas la distribución completa de la skill o la URL de su repositorio; no se puede deducir esa URL a partir de la del paquete.
 
 En Codex, la documentación oficial consultada permite skills locales por proyecto en `.agents/skills/` y personales en `~/.agents/skills/`. Coloca allí la carpeta completa. Invócala con `$issel-code-widgets` o selecciónala mediante `/skills`; si no aparece tras un cambio, reinicia Codex. Otros hosts pueden usar su propio mecanismo de descubrimiento. [Guía oficial de skills](https://learn.chatgpt.com/docs/build-skills).
 
