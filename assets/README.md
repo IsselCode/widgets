@@ -38,7 +38,7 @@ Esta documentación explica el paquete Flutter `issel_code_widgets` y la skill `
 | Página | Contenido |
 | --- | --- |
 | [API de app, tema, navegación y core](../../../../Desktop/issel_code_widgets/docs/referencia/api-transversal.md) | Tipos y métodos públicos que no son widgets. |
-| [Créditos y licencias](referencia/creditos.md) | Autoría, uso y licencias de las dependencias del paquete y la documentación. |
+| [Créditos y licencias](referencia/creditos.md) | Autoría, uso y licencias de los paquetes externos utilizados por `issel_code_widgets`. |
 | [Preguntas frecuentes y soluciones](guia/09-preguntas-frecuentes.md) | Problemas de instalación, layout, sincronización y navegación. |
 
 ## Descargar la skill

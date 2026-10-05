@@ -49,7 +49,7 @@ Las nueve guías y los logos proceden de los assets iniciales. Los ejemplos, las
 
 La validación de este proyecto comprueba la plataforma de documentación. La skill se utiliza como referencia de contenido; el sitio no ejecuta Flutter. Para usar el paquete, elige un SDK moderno y valida la combinación: no se establece un mínimo que no se haya probado.
 
-Los [créditos y licencias](assets/referencia/creditos.md) reconocen las dependencias del paquete, las herramientas del sitio, la tipografía y los iconos. Edita esa fuente Markdown y ejecuta `npm run docs:sync` cuando cambies los reconocimientos; la página aparece en la referencia y en el pie del sitio.
+Los [créditos y licencias](assets/referencia/creditos.md) reconocen los paquetes externos utilizados por `issel_code_widgets`: `auto_size_text`, `file_picker` y `shimmer`. Edita esa fuente Markdown y ejecuta `npm run docs:sync` cuando cambies los reconocimientos; la página aparece en la referencia y en el pie del sitio.
 
 ## Publicar
 

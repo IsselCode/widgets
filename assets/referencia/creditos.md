@@ -1,14 +1,13 @@
 # Créditos y licencias
 
-Issel Code Widgets utiliza proyectos de terceros para sus componentes y esta documentación. Reconocemos a sus autores y colaboradores. Consulta sus aportaciones y licencias.
+Issel Code Widgets utiliza paquetes externos en sus componentes. Reconocemos a sus autores y colaboradores. Consulta sus aportaciones y licencias.
 
 ## Dependencias del paquete
 
-El [`pubspec.yaml` de `issel_code_widgets`](https://github.com/IsselCode/issel_code_widgets/blob/main/pubspec.yaml) declara estas dependencias. Los enlaces de licencia llevan al texto publicado por cada proyecto.
+El [`pubspec.yaml` de `issel_code_widgets`](https://github.com/IsselCode/issel_code_widgets/blob/main/pubspec.yaml) declara estos paquetes externos. Los enlaces de licencia llevan al texto publicado por cada proyecto.
 
 | Paquete | Autoría y publicador | Licencia | Uso en Issel Code Widgets |
 | --- | --- | --- | --- |
-| [Flutter](https://flutter.dev) (`flutter`) | The Flutter Authors · `flutter.dev` | [BSD-3-Clause](https://github.com/flutter/flutter/blob/master/LICENSE) | Base de los componentes, formularios, tema y navegación. |
 | [auto_size_text](https://pub.dev/packages/auto_size_text) | Simon Leier y colaboradores · `simc.dev` | [MIT](https://pub.dev/packages/auto_size_text/license) | Ajuste del texto al espacio disponible en [IsselRadioCard](widgets/issel-radio-card.md). |
 | [file_picker](https://pub.dev/packages/file_picker) | Miguel Ruivo y colaboradores · `victorcarreras.dev` | [MIT](https://pub.dev/packages/file_picker/license) | Selección de archivos de imagen en [IsselImagePicker](widgets/issel-image-picker.md). |
 | [shimmer](https://pub.dev/packages/shimmer) | [HungHD (`hnvn`)](https://github.com/hnvn) y colaboradores · `hunghd.dev` | [BSD-3-Clause](https://pub.dev/packages/shimmer/license) | Animación de carga en [IsselShimmer](widgets/issel-shimmer.md). |
@@ -25,40 +24,4 @@ Los archivos de licencia de los paquetes publican estos avisos:
 
 La autoría y el publicador de un paquete pueden diferir del titular indicado en su licencia. El aviso de `shimmer` se conserva tal como aparece en el archivo del proyecto.
 
-## Dart y herramientas de desarrollo del paquete
-
-La biblioteca utiliza [Dart](https://dart.dev), de The Dart project authors, con [licencia BSD-3-Clause](https://github.com/dart-lang/sdk/blob/main/LICENSE). El `pubspec.yaml` también declara estas herramientas de desarrollo:
-
-| Herramienta | Autoría y publicador | Licencia | Uso |
-| --- | --- | --- | --- |
-| [flutter_test](https://github.com/flutter/flutter/tree/master/packages/flutter_test) | The Flutter Authors · SDK de Flutter | [BSD-3-Clause](https://github.com/flutter/flutter/blob/master/LICENSE) | Herramientas para las pruebas del paquete Flutter. |
-| [flutter_lints](https://pub.dev/packages/flutter_lints) | The Flutter Authors · `flutter.dev` | [BSD-3-Clause](https://pub.dev/packages/flutter_lints/license) | Reglas de análisis estático durante el desarrollo del paquete. |
-
-Estas dependencias pertenecen al desarrollo del paquete. Las comprobaciones de este sitio validan la documentación; no ejecutan pruebas Flutter.
-
-## Herramientas de esta documentación
-
-El `package.json` del sitio declara estos paquetes para generar y comprobar las páginas:
-
-| Paquete | Autoría | Licencia | Uso en el sitio |
-| --- | --- | --- | --- |
-| [marked](https://marked.js.org) | Christopher Jeffrey, MarkedJS y colaboradores | [MIT y aviso de Markdown](https://github.com/markedjs/marked/blob/master/LICENSE) | Lectura de las fuentes Markdown y normalización de enlaces en el importador. |
-| [@mdx-js/mdx](https://mdxjs.com) | John Otander y colaboradores; Compositor y Vercel | [MIT](https://github.com/mdx-js/mdx/blob/main/license) | Compilación de MDX para comprobar la sintaxis de las páginas. |
-| [mint](https://www.npmjs.com/package/mint) | Mintlify, Inc. | [Elastic License 2.0](https://cdn.jsdelivr.net/npm/mint/LICENSE) | Vista previa, validación y comprobación de enlaces con la CLI de Mintlify. |
-
-El archivo de licencia de `marked` también reconoce a **John Gruber** por Markdown y conserva su aviso y condiciones de redistribución. Consulta el archivo completo enlazado en la tabla.
-
-## Tipografía e iconos del sitio
-
-La configuración de `docs.json` utiliza estos recursos visuales:
-
-| Recurso | Autoría | Licencia | Uso |
-| --- | --- | --- | --- |
-| [Inter](https://rsms.me/inter/) | The Inter Project Authors | [SIL Open Font License 1.1](https://github.com/rsms/inter/blob/master/LICENSE.txt) | Familia tipográfica de la documentación. |
-| [Lucide](https://lucide.dev) | Lucide Icons y colaboradores; Cole Bemis para los iconos derivados de Feather | [ISC y MIT para los iconos indicados en la licencia](https://lucide.dev/license) | Iconos de las tarjetas y componentes de navegación del sitio. |
-
-## Conserva los avisos al distribuir
-
-Consulta el `pubspec.lock` de tu aplicación y el `package-lock.json` del sitio para identificar las dependencias resueltas, incluidas las transitivas. Revisa también las licencias de los plugins, fuentes y recursos que añadas a tu aplicación.
-
-Conserva los avisos de copyright y los textos de licencia que correspondan al software y los recursos que distribuyes. Esta página reconoce las dependencias directas y los recursos configurados en el sitio; los enlaces permiten consultar las condiciones completas de cada proyecto.
+Conserva los avisos y los textos de licencia de los paquetes que distribuyes. Puedes identificar las dependencias resueltas en el `pubspec.lock` de tu aplicación.

@@ -379,7 +379,7 @@
     "source": "assets/referencia/creditos.md",
     "route": "referencia/creditos",
     "title": "Créditos y licencias",
-    "description": "Issel Code Widgets utiliza proyectos de terceros para sus componentes y esta documentación. Reconocemos a sus autores y colaboradores. Consulta sus aportaciones y licencias.",
+    "description": "Issel Code Widgets utiliza paquetes externos en sus componentes. Reconocemos a sus autores y colaboradores. Consulta sus aportaciones y licencias.",
     "sidebarTitle": "Créditos y licencias"
   }
 ]
