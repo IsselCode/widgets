@@ -49,6 +49,8 @@ Las nueve guías y los logos proceden de los assets iniciales. Los ejemplos, las
 
 La validación de este proyecto comprueba la plataforma de documentación. La skill se utiliza como referencia de contenido; el sitio no ejecuta Flutter. Para usar el paquete, elige un SDK moderno y valida la combinación: no se establece un mínimo que no se haya probado.
 
+Los [créditos y licencias](assets/referencia/creditos.md) reconocen las dependencias del paquete, las herramientas del sitio, la tipografía y los iconos. Edita esa fuente Markdown y ejecuta `npm run docs:sync` cuando cambies los reconocimientos; la página aparece en la referencia y en el pie del sitio.
+
 ## Publicar
 
 Conecta esta carpeta como repositorio de documentación en tu cuenta de Mintlify. Publica `docs.json`, las páginas MDX generadas, `custom.css`, los logos y las imágenes. Después de modificar Markdown, ejecuta la sincronización antes de subir cambios.

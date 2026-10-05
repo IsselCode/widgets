@@ -107,3 +107,5 @@ Ejecuta la [primera app](../../../../../Desktop/issel_code_widgets/docs/ejemplos
 4. Los recursos externos que tu pantalla use están configurados.
 
 El paquete utiliza `auto_size_text`, `file_picker` y `shimmer`. Sus widgets de imágenes locales requieren assets declarados por la app; las fuentes y los plugins nativos de ventana también pertenecen a la app. Consulta las [recetas de integración](../../../../../Desktop/issel_code_widgets/docs/ejemplos/04-recetas.md).
+
+Revisa los [créditos y licencias](../referencia/creditos.md) para conocer la autoría, el uso y las licencias de esas dependencias.

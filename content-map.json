@@ -374,5 +374,12 @@
     "title": "Referencia de componentes",
     "description": "Encuentra el constructor, las propiedades y los límites de cada componente.",
     "sidebarTitle": "Componentes"
+  },
+  {
+    "source": "assets/referencia/creditos.md",
+    "route": "referencia/creditos",
+    "title": "Créditos y licencias",
+    "description": "Issel Code Widgets utiliza proyectos de terceros para sus componentes y esta documentación. Reconocemos a sus autores y colaboradores. Consulta sus aportaciones y licencias.",
+    "sidebarTitle": "Créditos y licencias"
   }
 ]

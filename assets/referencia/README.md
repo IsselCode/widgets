@@ -6,6 +6,8 @@ Los tipos auxiliares `IsselFilterOption`, `TabSwitcherAlignStates`, `IsselNaviga
 
 Los ejemplos breves de las fichas reciben datos/callbacks como parámetros. Para ejecutar una pantalla completa empieza en [primera app](../ejemplos/01-primera-app.md).
 
+Consulta los [créditos y licencias](creditos.md) para conocer a los autores de las dependencias del paquete y de esta documentación.
+
 ## Acciones
 
 | Componente | Función |

@@ -6,6 +6,8 @@ Selector de imagen con bytes, Form, carga y limpieza.
 
 Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_image_picker.dart).
 
+El selector predeterminado utiliza [file_picker](https://pub.dev/packages/file_picker), de Miguel Ruivo y colaboradores, con [licencia MIT](https://pub.dev/packages/file_picker/license). Consulta los [créditos y licencias](../creditos.md).
+
 ## Constructor
 
 Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.

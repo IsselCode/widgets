@@ -75,7 +75,8 @@
             "group": "Referencia",
             "pages": [
               "referencia/componentes",
-              "referencia/api-transversal"
+              "referencia/api-transversal",
+              "referencia/creditos"
             ]
           },
           {
@@ -182,6 +183,17 @@
     ]
   },
   "footer": {
+    "links": [
+      {
+        "header": "Documentación",
+        "items": [
+          {
+            "label": "Créditos y licencias",
+            "href": "/referencia/creditos"
+          }
+        ]
+      }
+    ],
     "socials": {
       "github": "https://github.com/IsselCode/issel_code_widgets"
     }

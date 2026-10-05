@@ -6,6 +6,8 @@ Placeholder rectangular que muestra animación tras un retraso.
 
 Importa el barrel público y Flutter Material. [Código fuente](https://github.com/IsselCode/issel_code_widgets/blob/main/lib/src/issel_shimmer.dart).
 
+La animación utiliza [shimmer](https://pub.dev/packages/shimmer), de HungHD (`hnvn`) y colaboradores, con [licencia BSD-3-Clause](https://pub.dev/packages/shimmer/license). Consulta los [créditos y licencias](../creditos.md).
+
 ## Constructor
 
 Esta firma corresponde al código fuente, incluyendo nulabilidad y defaults; las condiciones y el comportamiento se explican debajo.
