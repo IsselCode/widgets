@@ -19,7 +19,7 @@ La skill se activa si la invocas, si pides `issel_code_widgets` o si solicitas e
 
 ## Descargar la skill
 
-[Descarga `issel-code-widgets.rar`](/assets/issel-code-widgets.rar) y extrae la carpeta `issel-code-widgets` en `.agents/skills/` del proyecto o en tu carpeta personal de skills. Después invócala con `$issel-code-widgets`.
+[Descarga `issel-code-widgets.rar`](https://firebasestorage.googleapis.com/v0/b/issel-academy-d2bff.firebasestorage.app/o/docs_downloads%2Fissel-code-widgets.rar?alt=media&token=4725ebad-13fe-4d5d-99e1-22aa1111ea50) y extrae la carpeta `issel-code-widgets` en `.agents/skills/` del proyecto o en tu carpeta personal de skills. Después invócala con `$issel-code-widgets`.
 
 ## Qué hace el agente
 

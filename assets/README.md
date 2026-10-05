@@ -44,7 +44,7 @@ Esta documentación explica el paquete Flutter `issel_code_widgets` y la skill `
 
 Descarga la skill `issel-code-widgets` para usarla con Codex:
 
-[Descargar `issel-code-widgets.rar`](/assets/issel-code-widgets.rar)
+[Descargar `issel-code-widgets.rar`](https://firebasestorage.googleapis.com/v0/b/issel-academy-d2bff.firebasestorage.app/o/docs_downloads%2Fissel-code-widgets.rar?alt=media&token=4725ebad-13fe-4d5d-99e1-22aa1111ea50)
 
 Extrae la carpeta `issel-code-widgets` en `.agents/skills/` del proyecto o en tu carpeta personal de skills. Después invócala con `$issel-code-widgets`.
 
