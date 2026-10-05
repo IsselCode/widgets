@@ -17,6 +17,10 @@ No necesitas repetir MVVM, la jerarquía de superficies ni la lista de widgets. 
 
 La skill se activa si la invocas, si pides `issel_code_widgets` o si solicitas explícitamente el estilo Issel. Su descripción excluye proyectos Flutter sin relación con Issel. Una vez activa, sus instrucciones se aplican a la tarea, respetando tus requisitos y las convenciones adoptadas en la app.
 
+## Descargar la skill
+
+[Descarga `issel-code-widgets.rar`](/assets/issel-code-widgets.rar) y extrae la carpeta `issel-code-widgets` en `.agents/skills/` del proyecto o en tu carpeta personal de skills. Después invócala con `$issel-code-widgets`.
+
 ## Qué hace el agente
 
 | Paso | Acción | Resultado esperado |

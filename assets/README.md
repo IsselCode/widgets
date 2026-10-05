@@ -40,6 +40,14 @@ Esta documentación explica el paquete Flutter `issel_code_widgets` y la skill `
 | [API de app, tema, navegación y core](../../../../Desktop/issel_code_widgets/docs/referencia/api-transversal.md) | Tipos y métodos públicos que no son widgets. |
 | [Preguntas frecuentes y soluciones](guia/09-preguntas-frecuentes.md) | Problemas de instalación, layout, sincronización y navegación. |
 
+## Descargar la skill
+
+Descarga la skill `issel-code-widgets` para usarla con Codex:
+
+[Descargar `issel-code-widgets.rar`](/assets/issel-code-widgets.rar)
+
+Extrae la carpeta `issel-code-widgets` en `.agents/skills/` del proyecto o en tu carpeta personal de skills. Después invócala con `$issel-code-widgets`.
+
 Los ejemplos señalados con `dart-file` son archivos completos. Los fragmentos explicativos restantes indican su contexto. El repositorio de clientes de los ejemplos almacena datos en memoria; una integración real requiere el contrato del producto.
 
 Consulta las imágenes de [escritorio claro](images/desktop-light-v4.png), [móvil oscuro](images/mobile-dark.png) y [galería de componentes](images/widgets.png). Úsalas como material ilustrativo; los constructores y el código del paquete definen el comportamiento.
