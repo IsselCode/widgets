@@ -2,7 +2,19 @@
 
 Este ejemplo permite cargar clientes, validar nombre/correo/tipo, crear uno y mostrar confirmación. El repositorio es de demostración: guarda en memoria y simula una espera breve. El contrato puede implementarse con una API real sin modificar la vista.
 
-Parte de los archivos de la [primera app](01-primera-app.md), conserva su `AppIsselController` y añade los archivos siguientes. El nuevo `main.dart` abre `CustomersDemoApp`.
+## Preparación y estructura
+
+Consulta [Arquitectura por features](/guia/arquitectura#separar-responsabilidades) antes de crear los archivos: ahí tienes el árbol de carpetas y las responsabilidades de presentación, dominio y datos que utiliza este ejemplo.
+
+Parte de los archivos de la [primera app](/ejemplos/primera-app), conserva su `AppIsselController` y añade los archivos siguientes en las rutas indicadas sobre cada bloque. El nuevo `main.dart` abre `CustomersDemoApp`.
+
+Para bloquear la pantalla mientras esperas la carga o el guardado, añade [loader_overlay](https://pub.dev/packages/loader_overlay) a tu aplicación:
+
+```bash
+flutter pub add loader_overlay
+```
+
+Esta dependencia pertenece al ejemplo. La guía de [bloqueo del formulario](/guia/formularios-y-estados#bloquear-el-formulario) también explica las opciones de Flutter para bloquear controles concretos.
 
 ## Entidad y borrador
 
@@ -110,7 +122,7 @@ class MemoryCustomerRepository implements CustomerRepository {
 
 ## Controlador
 
-El controlador devuelve `AppResult` y además mantiene lista, carga y guardado. `load` impide solaparse con otra operación; si el usuario pulsa Guardar repetidamente, `createCustomer` rechaza duplicados aunque la vista ya deshabilite el botón. No conoce contextos, toasts ni rutas.
+El controlador devuelve `AppResult` y además mantiene lista, carga y guardado. `load` impide solaparse con otra operación; `createCustomer` rechaza un segundo envío mientras hay una operación pendiente. Conserva esta protección aunque la vista bloquee la interacción. No conoce contextos, toasts ni rutas.
 
 <!-- dart-file: lib/src/customers/presentation/controllers/customers_controller.dart -->
 ```dart
@@ -191,13 +203,18 @@ El guardado puede terminar después de `dispose`; el resultado se devuelve sin m
 
 ## Vista
 
-La vista es dueña de su controlador de pantalla y de los controllers de texto. Los campos viven dentro de una superficie `surface`, con bloques `surfaceContainer`. El callback de Guardar comprueba `mounted` antes de mostrar feedback. No se recrean Futures desde `build`.
+La vista es dueña de su controlador de pantalla, de los controllers de texto y del `FocusScopeNode` del formulario. Los campos viven dentro de una superficie `surface`, con bloques `surfaceContainer`.
+
+`_withFormOverlay` muestra la capa de carga, bloquea el foco y espera la operación con `await`. Su `finally` vuelve a habilitar el foco y oculta la capa si la vista sigue montada, incluso cuando la operación lanza una excepción. No necesitas un `busy` adicional ni pasar un bloqueo a cada campo. Los estados `isLoading` e `isSaving` siguen perteneciendo al controlador.
+
+La carga inicial comienza después del primer frame, cuando la pantalla y su `LoaderOverlay` ya están montados. El callback de **Guardar cliente** comprueba `mounted` antes de mostrar feedback. No se recrean Futures desde `build`.
 
 <!-- dart-file: lib/src/customers/presentation/views/customers_view.dart -->
 ```dart
 import 'package:flutter/material.dart';
 import 'package:issel_code_widgets/issel_code_widgets.dart';
 import 'package:issel_code_widgets/issel_core.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 import '../../domain/entities/customer.dart';
 import '../../domain/repositories/customer_repository.dart';
@@ -214,6 +231,7 @@ class CustomersView extends StatefulWidget {
 
 class _CustomersViewState extends State<CustomersView> {
   final _formKey = GlobalKey<FormState>();
+  final _formFocus = FocusScopeNode();
   final _name = TextEditingController();
   final _email = TextEditingController();
   late final CustomersController _controller;
@@ -224,12 +242,15 @@ class _CustomersViewState extends State<CustomersView> {
   void initState() {
     super.initState();
     _controller = CustomersController(widget.repository);
-    _controller.load();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) _load();
+    });
   }
 
   @override
   void dispose() {
     _controller.dispose();
+    _formFocus.dispose();
     _name.dispose();
     _email.dispose();
     super.dispose();
@@ -242,34 +263,33 @@ class _CustomersViewState extends State<CustomersView> {
     return Scaffold(
       appBar: AppBar(title: const Text('Clientes')),
       body: SafeArea(
-        child: AnimatedBuilder(
-          animation: _controller,
-          builder: (context, _) {
-            final busy = _controller.isSaving || _controller.isLoading;
-            return SingleChildScrollView(
-              padding: const EdgeInsets.all(24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 760),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(20),
-                        decoration: BoxDecoration(
-                          color: colors.surface,
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              Text('Nuevo cliente', style: text.titleMedium),
-                              const SizedBox(height: 16),
-                              AbsorbPointer(
-                                absorbing: busy,
-                                child: Column(
+        child: FocusScope(
+          node: _formFocus,
+          child: AnimatedBuilder(
+            animation: _controller,
+            builder: (context, _) {
+              return SingleChildScrollView(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 760),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(20),
+                          decoration: BoxDecoration(
+                            color: colors.surface,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Text('Nuevo cliente', style: text.titleMedium),
+                                const SizedBox(height: 16),
+                                Column(
                                   crossAxisAlignment:
                                       CrossAxisAlignment.stretch,
                                   children: [
@@ -279,11 +299,10 @@ class _CustomersViewState extends State<CustomersView> {
                                       controller: _name,
                                       hintText: 'Nombre del cliente',
                                       fillColor: colors.surfaceContainer,
-                                      readOnly: busy,
                                       validator: (value) =>
                                           (value ?? '').trim().isEmpty
-                                              ? 'Escribe el nombre'
-                                              : null,
+                                          ? 'Escribe el nombre'
+                                          : null,
                                     ),
                                     const SizedBox(height: 12),
                                     const Text('Correo'),
@@ -292,12 +311,11 @@ class _CustomersViewState extends State<CustomersView> {
                                       controller: _email,
                                       hintText: 'correo@ejemplo.com',
                                       fillColor: colors.surfaceContainer,
-                                      readOnly: busy,
                                       keyboardType: TextInputType.emailAddress,
                                       validator: (value) =>
                                           (value ?? '').trim().contains('@')
-                                              ? null
-                                              : 'Escribe un correo válido',
+                                          ? null
+                                          : 'Escribe un correo válido',
                                     ),
                                     const SizedBox(height: 12),
                                     const Text('Tipo de cliente'),
@@ -333,28 +351,28 @@ class _CustomersViewState extends State<CustomersView> {
                                     ),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(height: 20),
-                              IsselButton(
-                                text: _controller.isSaving
-                                    ? 'Guardando…'
-                                    : 'Guardar cliente',
-                                onTap: busy ? null : _save,
-                              ),
-                            ],
+                                const SizedBox(height: 20),
+                                IsselButton(
+                                  text: _controller.isSaving
+                                      ? 'Guardando…'
+                                      : 'Guardar cliente',
+                                  onTap: _save,
+                                ),
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text('Clientes registrados', style: text.titleMedium),
-                      const SizedBox(height: 12),
-                      ..._buildCustomers(context),
-                    ],
+                        const SizedBox(height: 24),
+                        Text('Clientes registrados', style: text.titleMedium),
+                        const SizedBox(height: 12),
+                        ..._buildCustomers(context),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-            );
-          },
+              );
+            },
+          ),
         ),
       ),
     );
@@ -366,7 +384,7 @@ class _CustomersViewState extends State<CustomersView> {
         SizedBox(
           height: 50,
           child: IsselShimmer(width: double.infinity, height: 50),
-        )
+        ),
       ];
     }
     final failure = _controller.loadFailure;
@@ -374,11 +392,7 @@ class _CustomersViewState extends State<CustomersView> {
       return [
         Text(failure.message),
         const SizedBox(height: 12),
-        IsselButton(
-            text: 'Reintentar',
-            onTap: () {
-              _controller.load();
-            }),
+        IsselButton(text: 'Reintentar', onTap: _load),
       ];
     }
     if (_controller.customers.isEmpty) {
@@ -403,14 +417,37 @@ class _CustomersViewState extends State<CustomersView> {
     ];
   }
 
+  Future<T> _withFormOverlay<T>(Future<T> Function() operation) async {
+    _formFocus.unfocus();
+    _formFocus.canRequestFocus = false;
+    context.loaderOverlay.show();
+    try {
+      return await operation();
+    } finally {
+      if (mounted) {
+        _formFocus.canRequestFocus = true;
+        context.loaderOverlay.hide();
+      }
+    }
+  }
+
+  Future<void> _load() async {
+    if (_controller.isLoading || _controller.isSaving) return;
+    await _withFormOverlay(() => _controller.load());
+  }
+
   Future<void> _save() async {
+    if (_controller.isLoading || _controller.isSaving) return;
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    final result = await _controller.createCustomer(CustomerDraft(
+    final draft = CustomerDraft(
       name: _name.text,
       email: _email.text,
       type: _type!,
       active: _active,
-    ));
+    );
+    final result = await _withFormOverlay(
+      () => _controller.createCustomer(draft),
+    );
     if (!mounted) return;
     switch (result) {
       case AppSuccess<CustomerEntity>(:final value):
@@ -421,13 +458,13 @@ class _CustomersViewState extends State<CustomersView> {
           _type = null;
           _active = true;
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Cliente ${value.name} creado')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Cliente ${value.name} creado')));
       case AppError<CustomerEntity>(:final failure):
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(failure.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(failure.message)));
     }
   }
 }
@@ -439,9 +476,12 @@ class _CustomersViewState extends State<CustomersView> {
 
 La raíz mantiene el repositorio de demostración durante su vida. Reconstruir el tema conserva los clientes almacenados en esa instancia.
 
+Coloca `LoaderOverlay` por encima de `CustomersView`. Así, el `context` de la vista puede mostrar y ocultar la capa. La capa cubre esta pantalla; los diálogos o rutas que abras necesitan definir su propio alcance de bloqueo.
+
 <!-- dart-file: lib/core/app/customers_demo_app.dart -->
 ```dart
 import 'package:flutter/material.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 import '../../src/customers/data/repositories/memory_customer_repository.dart';
 import '../../src/customers/presentation/views/customers_view.dart';
@@ -466,16 +506,23 @@ class _CustomersDemoAppState extends State<CustomersDemoApp> {
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
-        animation: _app,
-        builder: (_, __) => MaterialApp(
-          title: _app.config.title,
-          theme: _app.theme.lightTheme,
-          darkTheme: _app.theme.darkTheme,
-          themeMode: _app.theme.themeMode,
-          navigatorKey: _app.navigation.navigatorKey,
-          home: CustomersView(repository: _repository),
+    animation: _app,
+    builder: (_, _) => MaterialApp(
+      title: _app.config.title,
+      theme: _app.theme.lightTheme,
+      darkTheme: _app.theme.darkTheme,
+      themeMode: _app.theme.themeMode,
+      navigatorKey: _app.navigation.navigatorKey,
+      home: LoaderOverlay(
+        overlayWidgetBuilder: (_) => const Center(
+          child: CircularProgressIndicator(
+            semanticsLabel: 'Procesando clientes',
+          ),
         ),
-      );
+        child: CustomersView(repository: _repository),
+      ),
+    ),
+  );
 }
 ```
 
@@ -490,7 +537,9 @@ void main() => runApp(const CustomersDemoApp());
 
 ## Recorrido y variantes
 
-Ejecuta `dart format lib`, `flutter analyze` y `flutter run`. Comprueba el estado vacío, envío incompleto, creación válida, correo duplicado, dos pulsaciones durante el guardado y salida de la pantalla con una operación pendiente. Para verificar error de carga inyecta un repositorio que devuelva `AppResult.error`; la fuente en memoria normal siempre carga con éxito.
+Ejecuta `dart format lib`, `flutter analyze` y `flutter run`. Comprueba el estado vacío, envío incompleto, creación válida, correo duplicado y dos pulsaciones durante el guardado. Durante la carga o el guardado, intenta escribir, abrir el dropdown y recorrer el formulario con **Tab**; comprueba que la interacción se recupera al terminar.
+
+Para verificar error de carga inyecta un repositorio que devuelva `AppResult.error`; la fuente en memoria normal siempre carga con éxito. Comprueba también que una excepción retira la capa y que desmontar la pantalla con una operación pendiente no utiliza un contexto liberado. El bloqueo de interacción no cancela la operación; revisa el retroceso con tu router y las plataformas de destino.
 
 Para convertir el formulario en diálogo o ruta que devuelve un cliente, conserva el controlador y reemplaza sólo el efecto de éxito de la vista por `Navigator.of(context).pop(value)` o `app.navigation.goBack(value)`. El caller espera el resultado tipado y actualiza su listado. El dominio no cambia.
 

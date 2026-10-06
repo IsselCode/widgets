@@ -19,7 +19,7 @@ IsselDropdown2({
     this.height = 50,
     this.value,
     this.color,
-    FormFieldValidator<T>? validator,
+    super.validator,
     AutovalidateMode autovalidateMode = AutovalidateMode.disabled,
   })
 ```
@@ -35,7 +35,7 @@ IsselDropdown2({
 | `hintText` | `String` | Sí | `—` | Texto mostrado cuando no hay valor seleccionado. |
 | `onChanged` | `void Function(T?)?` | Sí | `—` | Callback invocado cuando cambia el valor seleccionado. |
 | `height` | `double` | No | `50` | Altura del contenedor del dropdown. |
-| `value` | `T?` | No | `null` | Valor inicial o seleccionado del campo. |
+| `value` | `T?` | No | `null` | Valor inicial o seleccionado; los cambios externos sincronizan el campo. |
 | `color` | `Color?` | No | `null` | Color de fondo opcional.  Si es null, usa [ColorScheme.surface]. |
 | `validator` | `FormFieldValidator<T>?` | No | `null` | Devuelve null para válido o un mensaje de error. |
 | `autovalidateMode` | `AutovalidateMode` | No | `AutovalidateMode.disabled` | Política de autovalidación del FormField. |
@@ -67,9 +67,9 @@ Widget validatedDropdownExample(
 
 ## Comportamiento y límites
 
-- value inicializa initialValue; después se muestra state.value. Una reconstrucción con otro value no sincroniza automáticamente el estado.
-- Si cambias la selección desde fuera, utiliza una GlobalKey<FormFieldState<T>> y didChange, o recrea el campo con una clave apropiada.
-- El callback interno siempre existe y llama state.didChange. onChanged: null no deshabilita el DropdownButton; usa un bloqueo de interacción cuando corresponda.
-- El mensaje de error ocupa espacio adicional debajo de height. No proporciona onSaved ni isExpanded.
+- `value` inicializa `initialValue`; después se muestra `state.value`. Al cambiar el `value` externo, el campo sincroniza la selección. Pasar `null` limpia la selección y vuelve a mostrar `hintText`.
+- El callback interno siempre existe y llama `state.didChange`. `onChanged: null` no deshabilita el `DropdownButton`.
+- Para bloquear este campo, combina `AbsorbPointer` con `ExcludeFocus`. Si necesitas bloquear el formulario mientras esperas un `await`, consulta [bloqueo del formulario](/guia/formularios-y-estados#bloquear-el-formulario) y el [ejemplo de clientes](/ejemplos/formulario-clientes). La capa de carga pertenece a la aplicación.
+- El mensaje de error ocupa espacio adicional debajo de `height`. No proporciona `onSaved` ni `isExpanded`.
 
 Para ejemplos con estado y composición completos, consulta [componentes reutilizables](../../ejemplos/03-componentes-reutilizables.md) y [formularios](../../guia/08-formularios-y-estados.md).

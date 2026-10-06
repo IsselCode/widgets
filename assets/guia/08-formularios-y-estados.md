@@ -7,7 +7,7 @@ Una vista crea una `GlobalKey<FormState>` estable y coloca sus campos dentro de 
 | Control | Participa en `Form` | Estado |
 | --- | --- | --- |
 | `IsselTextFormField` | Sí, `FormField<String>`. | Controller externo o interno estable. |
-| `IsselDropdown2<T>` | Sí, `FormField<T>`. | Estado interno inicializado desde `value`. |
+| `IsselDropdown2<T>` | Sí, `FormField<T>`. | Estado interno sincronizado con cambios externos de `value`. |
 | `IsselImagePicker` | Sí, `FormField<Uint8List?>`. | Bytes internos y sincronización de bytes externos. |
 | `IsselFloatTextField` | El campo visible contiene `IsselTextFormField`. | Controller externo y editor flotante. |
 | `IsselDropdown<T>` | No. | Valor controlado por la app. |
@@ -39,9 +39,58 @@ El listener del texto usa `FormFieldState.setValue`, no `didChange`. La validaci
 
 En un dropdown simple actualiza el valor y reconstruye el padre. Sus ítems deben tener valores únicos y contener el valor seleccionado. Los dropdowns simples no configuran `isExpanded`; utiliza etiquetas cortas o una composición distinta para valores extensos.
 
-`IsselDropdown2` inicializa el `FormField` con `value` y después presenta `state.value`. No implementa sincronización automática ante cambios externos de `value` ni deshabilita su callback interno cuando el callback externo es `null`. Para actualizarlo desde fuera conserva una `GlobalKey<FormFieldState<T>>` y llama `didChange`, recrea el campo mediante una clave cuando corresponda o usa otro control con el contrato que necesites. Para bloquear todo el formulario durante guardar, usa un bloqueo explícito de interacción.
+`IsselDropdown2` inicializa el `FormField` con `value` y después presenta `state.value`. Cuando cambia el `value` externo, sincroniza la selección; pasar `null` vuelve a mostrar el hint. Su callback interno sigue activo cuando el callback externo es `null`, así que `onChanged: null` no lo deshabilita. Para impedir cambios durante el guardado, utiliza un [bloqueo del formulario](#bloquear-el-formulario).
 
 El [formulario de clientes](../../../../../Desktop/issel_code_widgets/docs/ejemplos/02-formulario-clientes.md) demuestra validación, reconstrucción, borrador y bloqueo de envío. No depende de `onSaved`, porque los campos del paquete no lo ofrecen como parámetro de sus constructores.
+
+## Bloquear el formulario
+
+`await` espera el resultado de una operación asíncrona mientras la interfaz sigue respondiendo. Para impedir que cambies datos o envíes el formulario otra vez durante esa espera, añade un bloqueo de interacción.
+
+| Necesidad | Opción | Alcance |
+| --- | --- | --- |
+| Evitar editar texto | `readOnly` en los campos que lo exponen. | Conserva el valor y permite seleccionarlo; no bloquea otros controles. |
+| Bloquear un campo o un grupo | `AbsorbPointer` junto con `ExcludeFocus`. | Absorbe toques y clics y excluye el foco de teclado. Usa el estado de carga o guardado que ya tienes en el controlador. |
+| Bloquear la pantalla durante un `await` | `LoaderOverlay` junto con un `FocusScopeNode` del formulario. | Muestra progreso y bloquea la interacción sin añadir un `busy` en la vista. |
+
+`AbsorbPointer` por sí solo no bloquea el teclado. Combínalo con `ExcludeFocus` cuando el grupo incluya campos o botones que puedan conservar o recibir foco. Esta composición también sirve para `IsselDropdown2`, cuyo constructor no expone `enabled`.
+
+### Usar una capa de carga
+
+[loader_overlay](https://pub.dev/packages/loader_overlay) es una dependencia opcional de tu aplicación. Añádela con `flutter pub add loader_overlay` e importa `package:loader_overlay/loader_overlay.dart` en la composición y en la vista.
+
+En el [ejemplo de clientes](/ejemplos/formulario-clientes#composicion-y-arranque), la composición coloca `LoaderOverlay` por encima de `CustomersView`. Usa un `context` descendiente de esa capa para llamar a `context.loaderOverlay.show()` y `context.loaderOverlay.hide()`.
+
+La vista crea un `FocusScopeNode` estable, lo conecta con `FocusScope(node: _formFocus, child: ...)` alrededor del formulario y lo libera en `dispose`. Este método de la vista concentra la espera y la limpieza:
+
+```dart
+Future<T> _withFormOverlay<T>(Future<T> Function() operation) async {
+  _formFocus.unfocus();
+  _formFocus.canRequestFocus = false;
+  context.loaderOverlay.show();
+  try {
+    return await operation();
+  } finally {
+    if (mounted) {
+      _formFocus.canRequestFocus = true;
+      context.loaderOverlay.hide();
+    }
+  }
+}
+```
+
+Dentro del callback de guardado, comprueba el estado del controlador, valida los campos y construye el borrador antes de llamar al método:
+
+```dart
+final result = await _withFormOverlay(
+  () => _controller.createCustomer(draft),
+);
+if (!mounted) return;
+```
+
+La vista consume `result` para mostrar la confirmación o el fallo. `finally` retira la capa ante éxito, fallo esperado o excepción; comprobar `mounted` evita usar el contexto y el nodo de foco después de desmontar la pantalla. Conserva la protección de concurrencia del controlador con `isLoading` e `isSaving`: el bloqueo visual no sustituye esa responsabilidad ni cancela una petición pendiente.
+
+Al establecer `canRequestFocus = false` en un `FocusScopeNode`, sus descendientes tampoco pueden recibir foco. Consulta la [API de foco de Flutter](https://api.flutter.dev/flutter/widgets/FocusNode/canRequestFocus.html). Define el alcance de la capa al integrar diálogos o navegación, y comprueba el retroceso con tu router en las plataformas de destino.
 
 ## Búsqueda y filtros
 
